@@ -1,4 +1,4 @@
-# [C# 6.0]String interpolation
+# [C# 6.0]String interpolation，字串加前綴 $
 
 6.0組字串的新語法，看起來更直覺
 
