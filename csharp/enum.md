@@ -136,7 +136,7 @@ public enum ResultCodeEnums
 ```csharp
 public static class EnumHelper
 {
-    public static string GetEnumDescription(Enum value)
+    public static string GetEnumDescription(this Enum value)
     {
         var customAttributes = (DescriptionAttribute[])value.GetType().GetField(value.ToString())
             ?.GetCustomAttributes(typeof(DescriptionAttribute),
