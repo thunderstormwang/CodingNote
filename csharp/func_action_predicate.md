@@ -186,7 +186,7 @@ myFuncDel("John", 30);
 
 #### 用 C# 2.0 的 Anonymous Method:
 ```csharp
-myDelegate myFuncDel = new myDelegate(delegate(string name, int age){
+myDelegate<string, int> myFuncDel = new myDelegate(delegate(string name, int age){
     Console.WriteLine($"Hello World, Name: {name}, Age: {age}");
 });
 funcDel("John", 30);
@@ -195,14 +195,14 @@ funcDel("John", 30);
 
 <br>看到這裡, 大概看得出來 Func 就是幫你先把委派定義好, 少了宣告 delegate 的動作
 ```csharp
-Action myFuncDel = Output;
+Action<string, int> myFuncDel = Output;
 myFuncDel("John", 30);
 ```
 >Hello World, Name: John, Age: 30
 
 <br/>結合 lambda
 ```csharp
-Action myFuncDel = () => Console.WriteLine($"Hello World, Name: {name}, Age: {age}");;
+Action<string, int> myFuncDel = () => Console.WriteLine($"Hello World, Name: {name}, Age: {age}");
 myFuncDel("John", 30);
 ```
 >Hello World, Name: John, Age: 30
@@ -240,23 +240,23 @@ Console.WriteLine(myFuncDel(30));
 
 #### 用 C# 2.0 的 Anonymous Method:
 ```csharp
-myDelegate<string, int, string> myFuncDel = new myDelegate<string, int, string>(delegate(string name, int age){
-    return $"Hello World, Name: {name}, Age: {age}";
+myDelegate<int> myFuncDel = new myDelegate<int>(delegate(int age){
+    return age > 10;
 });
-Console.WriteLine(funcDel("John", 30));
+Console.WriteLine(funcDel(30));
 ```
->Hello World, Name: John, Age: 30
+>True
 
 <br>看到這裡, 大概看得出來 Func 就是幫你先把委派定義好, 少了宣告 delegate 的動作
 ```csharp
-Func<string, int, string> myFuncDel = Output;
+Predicate<int> myFuncDel = Output;
 Console.WriteLine(myFuncDel("John", 30));
 ```
->Hello World, Name: John, Age: 30
+>True
 
 <br/>結合 lambda
 ```csharp
-Func<string, int, string> myFuncDel = (name, age) => $"Hello World, Name: {name}, Age: {age}";;
-Console.WriteLine(myFuncDel("John", 30));
+Predicate<int> myFuncDel = age => age > 10;
+Console.WriteLine(myFuncDel(30));
 ```
->Hello World, Name: John, Age: 30
+>True
