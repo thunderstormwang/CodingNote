@@ -32,7 +32,7 @@ var names = employeeList.Where(e => e.Name.Contains("i"))
     .Select(e => e.Name);
 ```
 
-<br/>如果想不開, 開 C# 2.0 的匿名函式就這樣寫
+<br/>如果想不開，開 C# 2.0 的匿名函式就這樣寫
 ```csharp
 var anNames = employeeList.Where<Employee>(new Func<Employee, ool>(delegate(Employee employee)
     {
@@ -48,7 +48,7 @@ var anNames = employeeList.Where<Employee>(new Func<Employee, ool>(delegate(Empl
     }));
 ```
 
-<br/>如果想不開, 開 C# 1.0 的 delegate 這樣寫
+<br/>如果想不開，開 C# 1.0 的 delegate 這樣寫
 ```csharp
 var delegateNames = employeeList.Where<Employee>(new Func<Employee, bool>(MyWhereFunc))
     .OrderBy<Employee, int>(new Func<Employee, int>(MyOrderByFunc))
@@ -70,4 +70,4 @@ public string MySelectFunc(Employee employee)
 }
 ```
 
-<br/>lambda, linq 的寫法真的簡潔許多
+<br/>相比之下，lambda 和 linq 的寫法真的簡潔許多

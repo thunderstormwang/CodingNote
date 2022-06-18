@@ -14,17 +14,19 @@ public bool MyTest(CompareDelegate func, int x, int y)
     return func(x, y);
 }
 ```
+<br/>
 
 ### [C# 1.0]Delegate
-在 C# 1.0 你得宣告符合該 delegate 的函式，也需要為該函式取名字，即使它很簡短
-<br/>宣告符合該 delegate 的函式
+在 C# 1.0 你得宣告符合該 delegate 的函式，也需要為該函式取名字，即使它很簡短。
+
+<br/>首先宣告符合該 delegate 的函式
 ```csharp
 public bool MyCompare(int x, int y)
 {
     return x > y;
 }
 ```
-<br/>然後可以這樣使用
+然後可以這樣使用
 ```csharp
 CompareDelegate comDel = MyCompare;
 Console.WriteLine(MyTest(comDel, 10, 5));
@@ -35,9 +37,12 @@ Console.WriteLine(MyTest(MyCompare, 10, 5));
 <br/>True
 <br/>True
 
+<br/>
+
 ### [C# 2.0]Anonymous Method
-C# 2.0 新增匿名函式，不用再為簡短的函式命名
-<br/>使用時機是當這個 method 只會使用一次，且程式碼很少時。缺點是降低可讀性
+C# 2.0 新增匿名函式，不用再為簡短的函式命名。使用時機是當這個 method 只會使用一次，且程式碼很少時。缺點是降低可讀性。
+
+<br/>底下是使用範例
 ```csharp
 CompareDelegate comDel = delegate(int x, int y) { return x > y; };
 Console.WriteLine(MyTest(comDel, 10, 5));
@@ -49,6 +54,8 @@ Console.WriteLine(MyTest(delegate(int x, int y) { return x > y; },
 >True
 <br/>True
 <br/>True
+
+<br/>
 
 ### [C# 3.0]Lambda
 

@@ -8,7 +8,7 @@
   - [搭配 attribute 實作回傳代碼](#搭配-attribute-實作回傳代碼)
   - [Enumeration class vs Enumeration Typs](#enumeration-class-vs-enumeration-typs)
 
-
+<br/>
 
 ## string, enum conversion
 定義這樣的列舉
@@ -21,24 +21,22 @@ public enum Color
 }
 ```
 
+<br/>將列舉轉為字串
 ```csharp
 var color = Color.Red;
-// 將列舉轉為字串
 Console.WriteLine($"Enum To String: {day.ToString()}");
 ```
 > Enum To String: Red
-<br/>
 
+<br/>將字串轉為列舉
 ```csharp
-// 將字串轉為列舉
 color = (Color)Enum.Parse(typeof(Color), "green", true);
 Console.WriteLine($"String To Enum: {day}");
 ```
 > String To Enum: Green
-<br/>
 
+<br/>字串轉換若發生對不上的情況會丟出例外
 ```csharp
-// 將字串轉為列舉(對不上)
 try
 {
     var color = Enum.Parse(typeof(Color), "Orange");
@@ -49,38 +47,33 @@ catch (Exception ex)
 }
 ```
 > Error when Enum.Parse: 找不到要求的值 'Orange'。
-
 ---
 
 ## 列舉, 數字轉換
+將列舉轉為數字
 ```csharp
-// 將列舉轉為數字
 Console.WriteLine($"Enum to Int: {(int)Color.Green}");
 ```
 > Enum to Int: 1
-<br/>
 
+<br/>將數字轉回列舉
 ```csharp
-//將數字轉回列舉
 var color = (Color)2;
 Console.WriteLine($"Int to Enum: {color}");
 ```
 > Int to Enum: Blue
-<br/>
 
+<br/>數字轉換若發生對不上的情況不會丟出例外，但會出現非列舉值
 ```csharp
-// 數字轉換對不上不會有錯誤，但會出現非列舉值
 color = (Color)100;
 Console.WriteLine($"Int(100) to Enum: {color}");
 ```
 > Int(100) to Enum: 100
-
 ---
 
 ## 列出所有名稱
-
+列出所有名稱
 ```csharp
-//列出所有名稱
 foreach (var item in  Enum.GetNames(typeof(Color)))
 {
     Console.WriteLine($"Enum Name: {item}");
@@ -89,10 +82,10 @@ foreach (var item in  Enum.GetNames(typeof(Color)))
 > Enum Name: Red
 <br/>Enum Name: Green
 <br/>Enum Name: Blue
-
 ---
 
 ## 列出所有值
+用 extension method
 ```csharp
 public static class EnumUtil
 {
@@ -103,8 +96,8 @@ public static class EnumUtil
 }
 ```
 
+<br/>列出所有值
 ```csharp
-//列出所有值
 foreach (var item in EnumUtil.GetValues<Color>())
 {
     Console.WriteLine($"Enum Value: {(int)item}");
@@ -113,7 +106,6 @@ foreach (var item in EnumUtil.GetValues<Color>())
 > Enum Value: 0
 <br/>Enum Value: 1
 <br/>Enum Value: 2
-
 ---
 
 ## 搭配 attribute 實作回傳代碼
@@ -299,7 +291,6 @@ public class EmployeeType : Enumeration
 ```
 
 <br/>雖然變成 class, 原本的 model 的用法不變
-<br/>以下這種 model 很常見到
 ```csharp
 public class Employee
 {
@@ -319,7 +310,7 @@ public void ProcessBonus(Employee employee)
 ```
 如此讓商業邏輯不會四散在各地, 連 switch case 也不需要了(但是得多寫 code....)
 
-<br/>甚至可進一步將 EmployeeType 變成父類別, 將 BonusSize 的實作給分開
+<br/>甚至可進一步將 EmployeeType 變成父類別，將 BonusSize 的實作給分開
 ```csharp
 public abstract class EmployeeType : Enumeration
 {
