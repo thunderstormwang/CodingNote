@@ -42,7 +42,7 @@ foreach(var employee in employees)
 
 #### 需求變更
 如果此時需求增加，會計除了日常工作還要做算帳，軟體工程師也要做寫程式。
-<br/>那我們會改成這樣設計類別，為了讓客戶端仍使用 Employee 類別，在 Employee 開接口 Accounting, Coding 並將函式主題寫上 NotImplementException。然後讓會計類別實作 Accounting、軟體工程師類別實作 Coding。
+<br/>那我們會改成這樣設計類別，為了讓客戶端仍使用 Employee 類別，在 Employee 開接口 Accounting, Coding 並將函式主體寫上 Throw new NotImplementException()。然後讓會計類別實作 Accounting、軟體工程師類別實作 Coding。
 
 ```mermaid
 classDiagram
@@ -86,6 +86,13 @@ foreach(var employee in employees)
 
 <br/>這樣的設計有個問題，客戶端若只看 Employee 類別時，會認為所有員工都會日常工作、記帳、寫程式，除非客戶端將所有實作都看完才會知道哪種員工會什麼工作。這不是個很好的設計。
 <br/>我們也無法將記帳、寫程式下放至會計、軟體工程師類別，這會讓客戶端無法只使用 Employee 類別 ...
+<br/>所以我們就維持這樣的設計吧！
+
+<br/>
+
+#### 需求再次變更
+如果此時需求再次增加，增加資深會計和資深軟體工程師，資深會計除了記帳外，還要做記算薪水。資深軟體工程師除了寫程式外，還要做 code review。
+<br/>所以我們就再次更改設計，增加資深會計和資深軟體工程師兩個類別並為了達到程式碼共用而去繼承會計和軟體工程師，並在 Employee 類別多開了兩個接口。
 
 ```mermaid
 classDiagram
@@ -134,7 +141,7 @@ foreach(var employee in employees)
 ```
 
 <br/>這讓我們看到越來越複雜的繼承關係，我們若想更動 CodeReview 的內容，我們需要查看 Employee、軟體工程師、資深軟體工程師才知道實作在哪裡並修改。以及未來若有需求變更，我們應該又會更改繼承關係，並在 Employee 增加更多的接口(例如增加軟體工程師主管、會計主管的類別)
-<br/>這代表我們沒做到這件事：「把變化的部份封裝出來，以便日後可以輕鬆修改或擴展，而不影響其他部份」。所以我們應該將變化的部份找出來並將他們獨立出來，不要跟不會變化的部份混在一起。
+<br/>這代表我們沒做到這件事：「<b>把變化的部份封裝出來，以便日後可以輕鬆修改或擴展，而不影響其他部份</b>」。所以我們應該將變化的部份找出來並將他們獨立出來，不要跟不會變化的部份混在一起。
 <br/>在此例中，變化的部份是各類別的特定工作，我們可以用聚合的方式將它們獨立出來
 
 <br/>讓 Employee 類別依賴 ISpecificWork 類別
