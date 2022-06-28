@@ -4,17 +4,41 @@
 classDiagram
 class Invoker {
     +Command command
-    +Adapter()
+    +Invoke()
+    +Action()
 }
-class Command
-class CommandA
-class CommandB
-class CommandC
-class Receiver
+
+class Command {
+    #Receiver _receiver
+    +Command(Receiver receiver)
+    +Execute()
+}
+
+class CommandA {
+    +CommandA(Receiver receiver)
+    +Execute()
+}
+
+class CommandB {
+    +CommandB(Receiver receiver)
+    +Execute()
+}
+
+class CommandC {
+    +CommandC(Receiver receiver)
+    +Execute()
+}
+
+class Receiver {
+    +DoA()
+    +DoB()
+    +DoC()
+    +Receiver()
+}
 
 Invoker "1" ..> "1" Command
 Command <|-- CommandA
 Command <|-- CommandB
 Command <|-- CommandC
-Command "1"..> "1" Receiver
+Receiver "1" <.. "1" Command
 ```

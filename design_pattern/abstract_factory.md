@@ -52,10 +52,4 @@ AbstractProductA <|-- ProductA2
 
 AbstractProductB <|-- ProductB1
 AbstractProductB <|-- ProductB2
-
-Factory1 -- AbstractProductA
-Factory1 -- AbstractProductB
-
-Factory2 -- AbstractProductA
-Factory2 -- AbstractProductB
 ```
