@@ -8,7 +8,7 @@ class ITarget {
 }
 
 class Adapter {
-    +_Adaptee Adapter
+    +Adaptee _adapter
     +Adapter()
     +Execute()
 }
@@ -22,6 +22,3 @@ class Adaptee {
 ITarget <|-- Adapter
 Adapter "1" --> "1" Adaptee
 ```
-
-
-
