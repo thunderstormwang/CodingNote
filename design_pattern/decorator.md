@@ -19,7 +19,6 @@ class Decorator {
 }
 
 class ConcreteDecoratorA {
-    +string AddStateComponent
     +ConcreteDecoratorA(Component component)
     +Oeration()
     -AddedBehavior()
