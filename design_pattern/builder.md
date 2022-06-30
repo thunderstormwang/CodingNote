@@ -158,6 +158,7 @@ var result = builder.GetResult();
 ```
 
 ## 講師舉的另一個例子
+撰寫讀寫檔功能，寫檔時可以依需求先做 Base64、壓縮、AED 加密，或是 Base64、壓縮、DES 加密或是 壓縮、Base64、AED 加密
 
 <br/>IFileProcess 介面
 ```csharp
