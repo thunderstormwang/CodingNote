@@ -1,10 +1,9 @@
 # Design Pattern - Obsersver
 
-
 ```mermaid
 classDiagram
 class Subject {
-    +List<IObserver> _observer
+    +List~IObserver~ _observer
     +Subject()
     +AddObserver(IObserver observer)
     +RemoveObserver(IObserver observer)
@@ -27,10 +26,250 @@ class ConcreteObserver {
     +Update(object subject)
 }
 
-IMediator <|-- Mediator
-Colleague <|-- ConcreteColleague1
-Colleague <|-- ConcreteColleague2
+Subject <|-- ConcreteSubject
+IObserver <|-- ConcreteObserver
 
-IMediator <.. Colleague
-Colleague <.. Mediator
+Subject ..> IObserver
 ```
+
++ Subject
+  + 被觀察的對象，也就是通知者的抽象介面，通常是 abstract class
+  + 具備 IObserver 的集合欄位。
+  + 提供公開的新增/刪除 IObserver 的操作行為介面，圖中的AddObserver 和 RemoveObserver method。
+  + 提供通知的操作行為，圖中的 Notify Method，這個內部實作會呼叫 IObserver 的 Update 以使得 IObserver 可以接收變更通知。
++ ConcreteSubject
+  + Subject 的具體實作，儲存特定的狀態。
+  + 當有需要時，呼叫 Notify 通知所有觀察者。
++ IObserver
+  + 提供觀察者的抽象介面，可能是 interface 或是 abstract class
+  + 定義一個公開的自我更新介面，也就是 Update Method，以便 Subject 能夠呼叫更新通知。
++ ConcreteObserver
+  + 具有一個指向 ConcreteSubject 物件的欄位。
+  + 實作 IObserver 的 Update Method。
+
+IObserver 介面
+```csharp
+/// <summary>
+/// 觀察者的抽象
+/// </summary>
+public interface IObserver
+{
+    void Update();
+}
+```
+
+<br/>ConcreteObserver 類別
+```csharp
+public class ConcreteObserver : IObserver
+{
+    private ConcreteSubject _subject;
+
+    public string Name { get; set; }
+
+    public ConcreteObserver(ConcreteSubject subject)
+    {
+        _subject = subject;
+        _subject.AddObserver(this);
+    }
+
+    public void Update()
+    {
+        Console.WriteLine(string.Format("{0} Update Subject State : {1}", Name, _subject.SubjectState));
+    }
+}
+```
+
+<br/>Subject 抽象類別
+```csharp
+/// <summary>
+///  被觀察者(通知者)的抽象
+/// </summary>
+public abstract class Subject
+{
+    private List<IObserver> _observers;
+
+    public Subject()
+    {
+        _observers = new List<IObserver>();
+    }
+
+    public void AddObserver(IObserver observer)
+    {
+        _observers.Add(observer);
+    }
+
+    public void RemoveObserver(IObserver observer)
+    {
+        _observers.Remove(observer);
+    }
+
+    protected void Notify()
+    {
+        foreach (var observer in _observers)
+        {
+            observer.Update();
+        }
+    }
+}
+```
+
+<br/>ConcreteSubject 類別
+```csharp
+/// <summary>
+/// 實作通知者
+/// </summary>
+public class ConcreteSubject : Subject
+{
+    private string _subjectState;
+
+    public string SubjectState
+    {
+        get
+        {
+            return _subjectState;
+        }
+        set
+        {
+            if (value != _subjectState)
+            {
+                _subjectState = value;
+                Notify();
+            }
+        }
+    }
+}
+```
+
+<br/>Client 端程式
+```csharp
+ConcreteSubject s = new ConcreteSubject();
+ConcreteObserver o1 = new ConcreteObserver(s) { Name = "A" };
+ConcreteObserver o2 = new ConcreteObserver(s) { Name = "B" };
+
+s.SubjectState = "This is a dog";
+```
+
+<br/>在 C# 可使用委派(delegate)、事件(event)
+## 委派
+
+<br/>ConcreteSubject 類別
+```csharp
+public delegate void NotifyHandler(ConcreteSubject subject);
+
+public class ConcreteSubject
+{
+    private string _subjectState;
+
+    public NotifyHandler Notify;
+
+    public string SubjectState
+    {
+        get
+        {
+            return _subjectState;
+        }
+        set
+        {
+            if (value != _subjectState)
+            {
+                _subjectState = value;
+                OnNotify();
+            }
+        }
+    }
+
+    private void OnNotify()
+    {
+        if (Notify != null)
+        {
+            Notify(this);
+        }
+    }
+}
+```
+
+<br/>ConcreteObserver 類別
+```csharp
+public class ConcreteObserver
+{
+    public string Name { get; set; }
+
+    public void Update(ConcreteSubject subject)
+    {
+        Console.WriteLine(string.Format("{0} Update Subject State : {1}", Name, subject.SubjectState));
+    }
+}
+```
+
+<br/>Client 端程式
+```csharp
+ConcreteSubject s = new ConcreteSubject();
+s.Notify += new ConcreteObserver() { Name = "A" }.Update;
+s.Notify += new ConcreteObserver() { Name = "B" }.Update;
+s.Notify += new ConcreteObserver() { Name = "C" }.Update;
+
+s.SubjectState = "How old are you ?";
+```
+
+## 事件
+ConcreteSubject 類別
+```csharp
+public class ConcreteSubject
+{
+    private string _subjectState;
+
+    public event EventHandler Notify;
+
+    public string SubjectState
+    {
+        get
+        {
+            return _subjectState;
+        }
+        set
+        {
+            if (value != _subjectState)
+            {
+                _subjectState = value;
+                OnNotify();
+            }
+        }
+    }
+
+    private void OnNotify()
+    {
+        if (Notify != null)
+        {
+            Notify(this, EventArgs.Empty);
+        }
+    }
+}
+```
+
+<br/>ConcreteObserver 類別
+```csharp
+public class ConcreteObserver
+{
+    public string Name { get; set; }
+
+    public void Update(object subject, EventArgs args)
+    {
+        var s = (ConcreteSubject)subject;
+        Console.WriteLine(string.Format("{0} Update Subject State : {1}", Name, s.SubjectState));
+    }
+}
+```
+
+<br/>Client 端程式
+```csharp
+ConcreteSubject s = new ConcreteSubject();
+s.Notify += new ConcreteObserver() { Name = "A" }.Update;
+s.Notify += new ConcreteObserver() { Name = "B" }.Update;
+s.Notify += new ConcreteObserver() { Name = "C" }.Update;
+
+s.SubjectState = "All I have to do is dream.";
+```
+
+<br/>講師舉了其它例子
++ 在 C#要注意 memory leak，若 form2 是去訂閱 form1 的事件，在 form2 關閉時，需作 -= 委派或事件，不然記憶體不會被釋放
++ 實作自己的 Data Binding 的自動通知：實作 INotifyPropertyChanged
