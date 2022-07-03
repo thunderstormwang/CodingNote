@@ -4,8 +4,10 @@
 + 工廠方法讓一個產品類別的實例化遞延到其子工廠類別。
 + 降低客戶端程式碼與產品類別的耦合度。
 
+## 類別圖
 ```mermaid
 classDiagram
+class Client
 class AbstractFactory {
     +AbstractFactory()
     +CreateInstance()
@@ -36,6 +38,9 @@ class ProductB {
     +Execute()
 }
 
+Client ..> AbstractFactory
+Client ..> AbstractProduct
+
 AbstractFactory <|-- FactoryA
 AbstractFactory <|-- FactoryB
 
@@ -54,6 +59,60 @@ AbstractProduct <|-- ProductB
   + 依照 AbstractProduct 介面實作的具體產品類別(圖中的ProductA1、ProductB1 與ProductA2、ProductB2 )。
 + Factory
   + 依照 AbstractFactory 介面實作的具體工廠類別(圖中的Factory1 和Factory2)，具現實際產生具體產品的職責。
+
+<br/>工廠類別
+```csharp
+public abstract class AbstractFactory
+{
+    public abstract AbstractProduct CreateInstance();
+}
+
+public class FactoryA : AbstractFactory
+{
+    public override AbstractProduct CreateInstance()
+    {
+        return new ProductA();
+    }
+}
+
+public class FactoryB : AbstractFactory
+{
+    public override AbstractProduct CreateInstance()
+    {
+        return new ProductB();
+    }
+}
+```
+
+<br/>產品類別
+```csharp
+public abstract class AbstractProduct
+{
+    public abstract void Execute();
+}
+
+public class ProductA : AbstractProduct
+{
+    public override void Execute()
+    { }
+}
+
+public class ProductB : AbstractProduct
+{
+    public override void Execute()
+    { }
+}
+```
+
+<br/>Client 端程式碼
+```csharp
+AbstractFactory factory = new FactoryA()
+AbstractProduct product = factory.CreateInstance();
+product.Execute();
+```
+
+## Factory Method for Adapter
++ 為前面的 Communication Adapter 建立 Factory Method，分離創建 ICommunication 的過程。
 
 <br/>工廠類別
 ```csharp
@@ -79,7 +138,7 @@ public class SerialPortFactory : IFactory
 }
 ```
 
-<br/>產品類別
+<br/>產品介面
 ```csharp
 public interface ICommunication
 {
@@ -88,10 +147,10 @@ public interface ICommunication
     void Send(byte[] buffer);
     byte[] Receive();
 }
+```
 
-/// <summary>
-/// Tcp Adapter, 虛擬碼
-/// </summary>
+<br/>產品類別實作，Tcp Adapter，虛擬碼
+```csharp
 public class TcpCommunication : ICommunication
 {
     public bool Connect(string target)
@@ -99,25 +158,28 @@ public class TcpCommunication : ICommunication
         Console.WriteLine(string.Format("Tcp 連接到 : {0} ", target));
         return true;
     }
+
     public void Disconnect()
     {
         Console.WriteLine("Tcp 連接關閉");
     }
+
     public byte[] Receive()
     {
         byte[] result = new byte[] { 0x11, 0x12, 0x13, 0x14 };
         return result;
     }
+
     public void Send(byte[] buffer)
     {
         string data = BitConverter.ToString(buffer);
         Console.WriteLine(string.Format("Tcp 送出 : {0} ", data));
     }
 }
+```
 
-/// <summary>
-/// Serialport Adapter, 虛擬碼
-/// </summary>
+<br/>產品類別實作，Serialport Adapter, 虛擬碼
+```csharp
 public class SerialCommunication : ICommunication
 {
     public bool Connect(string target)
@@ -125,15 +187,18 @@ public class SerialCommunication : ICommunication
         Console.WriteLine(string.Format("開啟 Serial Port : {0} ", target));
         return true;
     }
+
     public void Disconnect()
     {
         Console.WriteLine("關閉 Serial Port");
     }
+
     public byte[] Receive()
     {
         byte[] result = new byte[] { 0x01, 0x02, 0x03, 0x04 };
         return result;
     }
+
     public void Send(byte[] buffer)
     {
         string data = BitConverter.ToString(buffer);
@@ -148,16 +213,14 @@ ICommunication commucation = (new TcpFactory()).GetInstance();
 commucation.Connect("192.168.1.1:5555");
 ```
 
-## 第二種寫法
+### 第二種寫法
 
-<br/>工廠類別
+<br/>工廠類別，搭配 Template Method
 ```csharp
-/// <summary>
-/// 搭配 Template Method
-/// </summary>
 public abstract class Factory
 {
     protected abstract Type RealType { get; }
+    
     public ICommunication GetInstance()
     {
         return (ICommunication)Activator.CreateInstance(RealType);

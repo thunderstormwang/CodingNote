@@ -4,15 +4,19 @@
 + 讓類別自己負責管理這唯一的物件實體。
 + Double-locking
 
+## 類別圖
 ```mermaid
 classDiagram
+class Client
 class Singleton {
-    +Singleton Instance
     -object _syncRoot
+    -Singleton _instance
+    +Singleton Instance
     +Singleton()
     +Execute()
 }
 
+Client ..> Singleton
 Singleton "*" ..> "1" Singleton
 ```
 
@@ -76,4 +80,33 @@ for (int i = 0; i < 10; i++)
 }
 ```
 
-## todo registry
+## Registry of Singletons
++ 又稱為 Multiton pattern
++ 管理一群不同型別的物件，而且希望在使用這些物件的時候都是以單例的形式。
++ 透過註冊表的方式達成。
+
+<br/>SingletonRegistry 類別
+```csharp
+public class SingletonRegistry
+{
+    private static Dictionary<string, object> registry = new Dictionary<string, object>();
+    public static T GetInstance<T>() where T : class, new()
+    {
+        Type type = typeof(T);
+        string key = type.Name;
+        if (!registry.ContainsKey(key))
+        {
+            registry[key] = new T();
+        }
+        return (T)registry[key];
+    }
+}
+```
+
+<br/>Client 端程式
+```csharp
+var o1 = SingletonRegistry.GetInstance<Class1>();
+var o2 = SingletonRegistry.GetInstance<Class1>();
+
+Console.WriteLine(object.ReferenceEquals(o1, o2));
+```

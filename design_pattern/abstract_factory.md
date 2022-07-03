@@ -4,6 +4,7 @@
 + 適用於多產品族，而且這些產品族是整族切換的情境。
 如下圖，機殼、電池需為同一家，不可能用蘋果的機殼去配三星的電池，所以切換工廠類別，就可整個生產線都切換
 
+## 類別圖
 ```mermaid
 classDiagram
 class AbstractFactory {
@@ -79,7 +80,7 @@ public abstract class AbstractFactory
 }
 ```
 
-<br/>工廠一，產生同一族的產品 A 與 產品 B
+<br/>Apple 工廠，產生同一族的機殼和電池
 ```csharp
 public class AppleFactory : AbstractFactory
 {
@@ -94,7 +95,7 @@ public class AppleFactory : AbstractFactory
 }
 ```
 
-<br/>工廠二，產生同一族的產品 A 與 產品 B
+<br/>Samsung 工廠，產生同一族的機殼和電池
 ```csharp
 public class SamsungFactory : AbstractFactory
 {
@@ -109,7 +110,7 @@ public class SamsungFactory : AbstractFactory
 }
 ```
 
-<br/>產品 A 的一般化
+<br/>機殼產品的一般化
 ```csharp
 public abstract class AbstractChassis
 { }
@@ -119,7 +120,7 @@ public class SamsungChassis : AbstractChassis
 { }
 ```
 
-<br/>產品 B 的一般化
+<br/>電池產品的一般化
 ```csharp
 public abstract class AbstractBattery
 { }
@@ -129,8 +130,7 @@ public class SamsungBattery : AbstractBattery
 { }
 ```
 
-<br/>Client 端程式碼
-<br/>切換工廠，即可切換生產線
+<br/>Client 端程式碼，切換工廠即可切換生產線
 ```csharp
 AbstractFactory factory = new AppleFactory();
 AbstractChassis chassis = new factory.CreateChassis();
