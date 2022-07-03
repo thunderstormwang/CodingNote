@@ -1,5 +1,7 @@
 # Design Pattern - Factory Method
 
+todo 加入泛型工廠
+
 + 定義一個可以用來創建物件的介面，讓這個創建介面的子類別去決定該實例化哪一個產品的實作類別。
 + 工廠方法讓一個產品類別的實例化遞延到其子工廠類別。
 + 降低客戶端程式碼與產品類別的耦合度。
@@ -220,7 +222,7 @@ commucation.Connect("192.168.1.1:5555");
 public abstract class Factory
 {
     protected abstract Type RealType { get; }
-    
+
     public ICommunication GetInstance()
     {
         return (ICommunication)Activator.CreateInstance(RealType);
