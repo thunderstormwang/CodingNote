@@ -1,7 +1,5 @@
 # Design Pattern - Factory Method
 
-todo 加入泛型工廠
-
 + 定義一個可以用來創建物件的介面，讓這個創建介面的子類別去決定該實例化哪一個產品的實作類別。
 + 工廠方法讓一個產品類別的實例化遞延到其子工廠類別。
 + 降低客戶端程式碼與產品類別的耦合度。
@@ -252,8 +250,95 @@ public class SerialPortFactory : Factory
 }
 ```
 
+<br/>產品類別同上
+<br/>
 <br/>Client端程式碼
 ```csharp
 ICommunication commucation = (new SerialPortFactory()).GetInstance();
 commucation.Connect("COM2");
 ```
+
+## 泛型工廠
++ Factory Method 的一種型態
++ 泛型工廠的實作
++ 動態載入的應用
+
+### 類別圖
+
+```mermaid
+classDiagram
+class Client
+class GenericFactory {
+    +CreateInstance<'T>(string assemblyName, string typename) T
+    +CreateInstance<'T>(string assemblyName, string typename, object [] args) T
+    CreateInstance<'T>(Type type) T
+    CreateInstance<'T>(Type type, object[] args) T
+}
+
+class ICommunication {
+    +Connect(string target) bool
+    +Disconnect()
+    +Send(byte[] buffer)
+    +Receive() byte[]
+}
+
+class TcpCommunication {
+    +TcpCommunication()
+    +Connect(string target) bool
+    +Disconnect()
+    +Send(byte[] buffer)
+    +Receive() byte[]
+}
+
+class SerialCommunication {
+    +SerialCommunication()
+    +Connect(string target) bool
+    +Disconnect()
+    +Send(byte[] buffer)
+    +Receive() byte[]}
+
+Client ..> ICommunication
+Client ..> GenericFactory
+
+ICommunication <|-- TcpCommunication
+ICommunication <|-- SerialCommunication
+```
+
+<br/>工廠類別
+```csharp
+public class GenericFactory
+{
+    public static T CreateInstance<T>(string assemblyName, string typename)
+    {
+        return CreateInstance<T>(assemblyName, typename, null);
+    }
+
+    public static T CreateInstance<T>(string assemblyName, string typename, object[] args)
+    {
+        object instance = Activator.CreateInstance(assemblyName, typename, args).Unwrap();
+        return (T)instance;
+    }
+
+    public static T CreateInstance<T>(Type type)
+    {
+        return CreateInstance<T>(type, null);
+    }
+
+    public static T CreateInstance<T>(Type type, object[] args)
+    {
+        object instance = Activator.CreateInstance(type, args);
+        return (T)instance;
+    }
+}
+```
+
+<br/>產品類別同上
+<br/>
+<br/>Client 端程式碼，直接呼叫 泛型工廠
+```csharp
+var communication = GenericFactory.CreateInastance<InterfaceLibrary.ICommunication>
+     ("CommunicationLibrary", "CommunicationLibrary.TcpCommunication");
+
+communication.Connect("192.168.20.89:168");
+```
+

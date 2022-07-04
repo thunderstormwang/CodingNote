@@ -161,7 +161,7 @@ public class CommunicationFactory
 }
 ```
 
-<br/>工廠類別、Client 端程式 同上
+<br/>產品類別、Client 端程式 同上
 
 ### 利用資源字典決定實體
 
@@ -210,4 +210,4 @@ public class CommunicationFactory
 }
 ```
 
-<br/>工廠類別、Client 端程式 同上
+<br/>產品類別、Client 端程式 同上

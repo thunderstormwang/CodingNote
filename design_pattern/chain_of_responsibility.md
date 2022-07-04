@@ -1,11 +1,14 @@
 # Design Pattern - Chain of Responsibility
 
+## todo 農夫渡河
+
 + 讓多個物件都有機會處理請求，從而避免請求發送者和接受者之間的耦合關係。將這些物件串成一條鏈，並沿著這條鏈處理和傳遞請求，直到有物件決定不再傳遞下去為止。
 + 鏈太長的時候，容易有效能問題；偵錯上也比較複雜，但是比起巢狀判斷式還是容易多了。
 + Chain Of Responsibility 和 Strategy 很像，如果你知道該由哪個物件去處理請求，可直接設計成 Strategy，直接將請求丟給該件件；如果你不知道該由哪個物去處理請求，用 Chain Of Responsibility，讓請求在物件間傳遞，讓物件自己決定是否處理此請求或要不要繼續傳遞請求
 
 ```mermaid
 classDiagram
+class Client
 class AbstractHandler {
     <<abstract>>
     #AbstractHandler _successor_
@@ -24,6 +27,7 @@ class ConcreteHandler2 {
     +HandlerRequest()
 }
 
+Client --> AbstractHandler
 AbstractHandler <|-- ConcreteHandler1
 AbstractHandler <|-- ConcreteHandler2
 ```
@@ -38,17 +42,74 @@ AbstractHandler <|-- ConcreteHandler2
 + Client
   + 將要處理的訊息傳遞給第一個 ConcreteHandler。
 
-<br/>用 FakeDataSource 模擬假資料，驗證資料的正確性，項目如下
+<br/>AbstractHandler 抽象類別
+```csharp
+public abstract class AbstractHandler
+{
+    protected AbstractHandler _successor;
+
+    public abstract void HandleRequest();
+
+    public void SetSuccessor(AbstractHandler successor)
+    {
+        _successor = successor;
+    }
+}
+```
+
+<br/>子類別 ConcreteHandler1
+```csharp
+public  class ConcreteHandler1 : AbstractHandler
+{
+    public override void HandleRequest()
+    {
+        // do something ...
+        
+        if (_successor != null)
+        {
+            _successor.HandleRequest();
+        }
+    }
+}
+```
+
+<br/>子類別 ConcreteHandler2
+```csharp
+public class ConcreteHandler2 : AbstractHandler
+{
+    public override void HandleRequest()
+    {
+        // do something ...
+        
+        if (_successor != null)
+        {
+            _successor.HandleRequest();
+        }
+    }
+}
+```
+
+<br/>Client 端程式碼
+```
+AbstractHandler handler = new ConcreteHandler1();
+handler.SetSuccessor(new ConcreteHandler2());
+
+handler.HandleRequest();
+```
+---
+## Chain of Responsibility 資料驗證
+驗證需求
 + 總長需為 29
 + index 0~2 需為 965
 + index 13~20 需為日期格式
 + index 21~28 需為日期格式
 
-FakeDataSource 如下程式碼
+<br/>用 FakeDataSource 模擬假資料，如下程式碼
 ```csharp
 public class FakeDataSource
 {
     private static List<string> _data;
+
     public static List<string> Data
     {
         get
@@ -61,12 +122,6 @@ public class FakeDataSource
         }
     }
 
-    /// <summary>
-    /// 總長需為 29
-    ///  0~2 需為 965,
-    ///  13~20 需為日期格式,
-    ///  21~28 需為日期格式,
-    /// </summary>
     private static void CreateData()
     {
         _data = new List<string>()
@@ -117,9 +172,10 @@ public class FormatChecker
 
 不管採用何種方式，皆需確認每個檢查都要回傳相同型別的物件
 
-## 轉成 Chain Of Responsibility 模式
-
-<br/>FormatChecker 抽象類別，各個子類別需實作 InternalCheck 去實現自己的檢查
+### 將驗證行為轉成 Chain Of Responsibility 模式
+FormatChecker 抽象類別，各個子類別需實作 InternalCheck 去實現自己的檢查
++ 檢查結果為 true, 若沒有後繼者,表示檢查結束, 若有後繼者則繼續往下處理
++ 檢查結果為 false, 則跳出, 不再處理
 ```csharp
 public abstract class FormatChecker
 {
@@ -127,9 +183,7 @@ public abstract class FormatChecker
     protected abstract bool InternalCheck(string source);
 
     public CheckResult Check(string source)
-    {
-        // 檢查結果為 true, 若沒有後繼者,表示檢查結束, 若有後繼者則繼續往下處理
-        // 檢查結果為 false, 則跳出, 不再處理
+    {        
         if (InternalCheck(source))
         {
             if (_successor != null)
@@ -152,7 +206,10 @@ public abstract class FormatChecker
         _successor = successor;
     }
 }
+```
 
+<br/>統一回傳的型別
+```csharp
 public class CheckResult
 {
     public string Source { get; set; }
@@ -166,6 +223,7 @@ public class LengthChecker : FormatChecker
 {
     public LengthChecker(FormatChecker successor) : base(successor)
     { }
+
     protected override bool InternalCheck(string source)
     {
         return source.Length == 29;
@@ -179,6 +237,7 @@ public class HeadChecker : FormatChecker
 {
     public HeadChecker(FormatChecker successor) : base(successor)
     { }
+
     protected override bool InternalCheck(string source)
     {
         string head = source.Substring(0, 3);
@@ -193,6 +252,7 @@ public class FirstDateChecker : FormatChecker
 {
     public FirstDateChecker(FormatChecker successor) : base(successor)
     { }
+
     protected override bool InternalCheck(string source)
     {
         var dateString = source.Substring(13, 8);
@@ -208,6 +268,7 @@ public class SecondDateChecker : FormatChecker
 {
     public SecondDateChecker(FormatChecker successor) : base(successor)
     { }
+
     protected override bool InternalCheck(string source)
     {
         var dateString = source.Substring(21, 8);
@@ -217,7 +278,7 @@ public class SecondDateChecker : FormatChecker
 }
 ```
 
-<br/>由 ChainContext 組成責任鏈
+<br/>由 ChainContext 類別組成責任鏈
 ```csharp
 public class ChainContext
 {
@@ -246,9 +307,8 @@ foreach (var item in results)
 
 <br/>實作過程中可以先把每個檢查寫成函式，比較方便作架構的修改
 
-## 每個檢查皆指定給委派，再將委派全放到一個 List，跑此 List 內的所有委派即算檢查
-
-<br/>由 FormatChecker 組成委派
+### 每個檢查皆指定給委派，再將委派全放到一個 List，跑此 List 內的所有委派即算檢查
+由 FormatChecker 組成委派
 ```csharp
 public class FormatChecker
 {
@@ -257,7 +317,9 @@ public class FormatChecker
     public CheckResult Check(string source)
     {
         CreateCheckers();
+
         var isErrorDetected = _checkers.Any((x) => x.Invoke(source) == false);
+
         if (isErrorDetected)
         {
             return new CheckResult() { Source = source, Result = false };
@@ -293,12 +355,6 @@ public class FormatChecker
             });
         }
     }
-}
-
-public class CheckResult
-{
-    public string Source { get; set; }
-    public bool Result { get; set; }
 }
 ```
 
