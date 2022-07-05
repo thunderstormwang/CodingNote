@@ -205,17 +205,25 @@ private static void Phase3_Process()
 }
 ```
 
-### Decorator with Adapter
-
-<br/>既有的 FileProcess 類別，無法更動程式碼
+### 用 Decorator 模式改寫
+<br/>IFileProcess 介面
 ```csharp
-public class FileProcess
+public interface IFileProcess
+{
+    void Write(string path, byte[] data);
+    byte[] Read(string path);
+}
+```
+
+<br/>FileProcess 類別
+```csharp
+public class FileProcess : IFileProcess
 {
     public void Write(string path, byte[] data)
     {
         File.WriteAllBytes(path, data);
     }
-    
+
     public byte[] Read(string path)
     {
         if (File.Exists(path))
@@ -226,41 +234,6 @@ public class FileProcess
         {
             throw new FileNotFoundException();
         }
-    }
-}
-```
-
-1. 先為既有的 FileProcess 建立一個 Adapter。
-2. 接著再以 Adapter 介面建立 Decorator
-
-<br/>Adapter 的公開介面，同時也是 Decorator 抽象類別要實作的介面
-```csharp
-public interface IFileProcess
-{
-    void Write(string path, byte[] data);
-    byte[] Read(string path);
-}
-```
-
-<br/>Adapter 的實作，介接已存在的 FileProcess 類別
-```csharp
-public class FileProcessAdapter : IFileProcess
-{
-    private FileProcess _fileProcess;
-
-    public FileProcessAdapter()
-    {
-        _fileProcess = new Original.FileProcess();
-    }
-
-    public byte[] Read(string path)
-    {
-        return _fileProcess.Read(path);
-    }
-
-    public void Write(string path, byte[] data)
-    {
-        _fileProcess.Write(path, data);
     }
 }
 ```
@@ -280,6 +253,7 @@ public abstract class FileDecorator : IFileProcess
     public abstract void Write(string path, byte[] data);
 }
 ```
+
 <br/>Base64 裝飾器
 ```csharp
 public class Base64FileDecorator : FileDecorator
@@ -494,7 +468,9 @@ public class GZipFileDecorator : FileDecorator
 }
 ```
 
-<br/>Client 端程式
+<br/>Client 端程式，包裝順序：base64 編碼、壓縮、DES 加密
+<br/>寫入的方式：先做 DES 加密，再做壓縮，再做 base64 編碼，最後寫入檔案
+<br/>讀取的方式：先讀取檔案，再做 base64 解碼，再做解壓縮，最後是 DES 解密
 ```csharp
 private string path = "1.txt";
 private string source = "ABCDEFD 這是一本書";
@@ -507,3 +483,109 @@ fileDecorator.Write(path, Encoding.UTF8.GetBytes(source));
 var result = Encoding.UTF8.GetString(fileDecorator.Read(path));
 Console.WriteLine(result);
 ```
+
+### 將上例加入 Extension Method 
+
+<br/>增加 FileDecoratorHelper 類別
+```csharp
+public static class FileDecoratorHelper
+{
+    public static FileDecorator Decorate<T>(this IFileProcess component) where T : FileDecorator
+    {
+        var instance = Activator.CreateInstance(typeof(T), new object[] { component });
+        return instance as FileDecorator;
+    }
+}
+```
+
+<br/>那麼 Client 端程式可以改寫，包裝順序依然是：base64 編碼、壓縮、AES 加密，但較美觀
+<br/>寫入的方式：先做 AES 加密，再做壓縮，再做 base64 編碼，最後寫入檔案
+<br/>讀取的方式：先讀取檔案，再做 base64 解碼，再做解壓縮，最後是 AES 解密
+```csharp
+private string path = "1.txt";
+private string source = "ABCDEFD 這是一本書";
+
+FileDecorator fileDecorator = new FileProcess().Decorate<Base64FileDecorator>().Decorate<GZipFileDecorator>();Decorate<AESCryptoFileDecorator>();
+
+fileDecorator.Write(path, Encoding.UTF8.GetBytes(source));
+
+var result = Encoding.UTF8.GetString(fileDecorator.Read(path));
+Console.WriteLine(result);
+```
+
+### Decorator with Adapter
+我們再增加情境，假設既有的 FileProcess 類別，是我們無法更動的程式碼
+```csharp
+public class FileProcess
+{
+    public void AnotherWrite(string path, byte[] data)
+    {
+        File.WriteAllBytes(path, data);
+    }
+    
+    public byte[] AnotherRead(string path)
+    {
+        if (File.Exists(path))
+        {
+            return File.ReadAllBytes(path);
+        }
+        else
+        {
+            throw new FileNotFoundException();
+        }
+    }
+}
+```
+<br/>
+
+1. 先為既有的 FileProcess 建立一個 Adapter。
+2. 接著再以 Adapter 介面建立 Decorator
+<br/>Adapter 的公開介面，同時也是 Decorator 抽象類別要實作的介面
+```csharp
+public interface IFileProcess
+{
+    void Write(string path, byte[] data);
+    byte[] Read(string path);
+}
+```
+
+<br/>Adapter 的實作，介接已存在的 FileProcess 類別
+```csharp
+public class FileProcessAdapter : IFileProcess
+{
+    private FileProcess _fileProcess;
+
+    public FileProcessAdapter()
+    {
+        _fileProcess = new FileProcess();
+    }
+
+    public byte[] Read(string path)
+    {
+        return _fileProcess.AnotherRead(path);
+    }
+
+    public void Write(string path, byte[] data)
+    {
+        _fileProcess.AnotherWrite(path, data);
+    }
+}
+```
+
+<br/>Decorator 的抽象類別
+```csharp
+public abstract class FileDecorator : IFileProcess
+{
+    protected readonly IFileProcess _fileProcess;
+
+    protected FileDecorator(IFileProcess fileProcess)
+    {
+        _fileProcess = fileProcess;
+    }
+
+    public abstract byte[] Read(string path);
+    public abstract void Write(string path, byte[] data);
+}
+```
+
+<br/>那麼其它的 Decorator 實作、Client 端程式就可以沿用上例

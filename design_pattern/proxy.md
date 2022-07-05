@@ -7,8 +7,10 @@
   + protection proxy (設限代理)
   + smart reference (智慧參考)
 
+## 類別圖
 ```mermaid
 classDiagram
+class Client
 class Subject {
     +Subject()
     +Request()
@@ -25,6 +27,7 @@ class Proxy {
     +Request()
 }
 
+Client ..> Subject
 Subject <|-- RealSubject
 Subject <|-- Proxy
 ```
@@ -40,24 +43,16 @@ Subject <|-- Proxy
   + 內部會具有指向 Subject 或 RealSubject 的欄位。
   + 控制對於 RealSubject 的存取行為。
 
-- Subject
-	- 成為真正被代理物件的介面。
-	- 成為 Proxy (代理者) 的介面。
-	- 可能是個 interface 或是 abstract class。
-- RealSubject
-	- Subject 的具體實作，定義 Proxy 所要代理的真正物件。
-- Proxy
-	- 依照 Subject 介面所設計。
-	- 內部會具有指向 Subject 或 RealSubject 的欄位。
-	- 控制對於 RealSubject 的存取行為。
-
 <br/>Subject 類別
 ```csharp
 public abstract class Subject
 {
     public abstract void Request();
 }
+```
 
+<br/>RealSubject 類別
+```csharp
 public class RealSubject : Subject
 {
     public override void Request()
@@ -99,11 +94,12 @@ public class Proxy : Subject
 
 <br/>Client 端程式
 ```csharp
-Subject o = new Proxy();
-o.Request();
+Subject sub = new Proxy();
+sub.Request();
 ```
 
 ## 讀檔
+本來已經有一個讀寫檔案的功能，為它增加權限管理的功能。
 
 FileProcess 類別
 ```csharp
