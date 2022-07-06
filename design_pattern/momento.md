@@ -29,7 +29,6 @@ class CareTaker {
 
 Client ..> Originator
 Client ..> CareTaker
-
 Originator --> Momento
 CareTaker --> Momento
 ```

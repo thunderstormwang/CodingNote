@@ -317,10 +317,10 @@ Console.WriteLine(o.GetType().Name);
 ```mermaid
 classDiagram
 class PrototypeManager {
-    -PrototypeManager _manager
+    -Dictionary~string, ICloneable~ _objects
     +PrototypeManager()
     +AddPrototype(string name, ICloneable value)
-    +ICloneable GetPrototype()
+    +ICloneable GetPrototype(string name)
 }
 
 class AbstractFactory {
