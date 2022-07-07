@@ -3,6 +3,7 @@
 + 將一個請求封裝成一個物件，讓你能夠使用各種不同的訊息、佇列、紀錄以及支援復原功能加以參數化。
 + 將命令的請求方與執行方解耦。
 
+## 類別圖
 ```mermaid
 classDiagram
 class Invoker {
@@ -155,4 +156,20 @@ invoker.SetCommnad(command);
 invoker.Action();
 ```
 
-todo: command 檢查檔案格式(在雲端硬碟)
+## 依序執行的 Command Pattern
++ 前述的 Invoker 內部是單一個 Command 型別欄位(屬性)，呼叫 Action method 只能執行一個Command。
++ 若改為集合，就可以讓 Invoker 一次執行多個命令。
+
+todo: (在雲端硬碟)
+
+## 具有復原功能的 Command Pattern
++ 一樣使用 Command 集合，但在這種情境下的集合代表的是歷史紀錄，用以作為復原時使用。
++ 這種情境多半搭配 Memento Pattern。
+
+todo: (在雲端硬碟)
+
+## Macro Command
++ 巨集式的命令，這樣情境通常是一個 Commmand 呼叫多個 Receivers 來協同完成工作。
++ 這種情境下的 Receivers 會直接定義在Command 的具體實作類別內部，而不是由建構子注入。
+
+todo: (在雲端硬碟)

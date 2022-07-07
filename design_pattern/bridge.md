@@ -2,6 +2,7 @@
 
 + 將抽象與實作解耦合，使得兩邊可以獨立的變化。
 
+## 類別圖
 ```mermaid
 classDiagram
 class Abstraction {
@@ -13,7 +14,6 @@ class RefinedAbstraction {
     #RefinedAbstraction(IImplementor implementor)
     +OperationImp()
 }
-
 class IImplementor {
     <<interface>>
     +OperationImp()
@@ -108,8 +108,10 @@ RefinedAbstraction refinedAbstraction = new RefinedAbstraction(new ImplementorA(
 refinedAbstraction.Operation();
 ```
 
-## 另一個例子，計算 BMI
-Human 抽象類別，裡面包含 BMI 的計算
+## 另一個例子，BMI 重構
++ 利用 Bridge Pattern 重構，讓繼承轉為聚合
+  
+<br/>Human 抽象類別，裡面包含 BMI 的計算
 ```csharp
 public abstract class Human
 {
@@ -323,3 +325,7 @@ public class WomanComment : IBMIComment
     }
 }
 ```
+
+## Bridge + Adapter
++ 擴張 Macro Command 範例，除了原有寫入檔案的功能外，現在又要整合 Socket 送資料的功能。
++ 在 Command 的實作中採用 Bridge Pattern。

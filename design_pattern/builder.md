@@ -4,8 +4,10 @@
 + Builder 提供建構物件的方法
 + 最重要的人物是 Director
 
+## 類別圖
 ```mermaid
 classDiagram
+class Client
 class Director {
     +Director(Builder builder)
 }
@@ -31,6 +33,7 @@ class ConcreteBuilder2 {
     +GetResult() Product
 }
 
+Client ..> Director
 Director "1" ..> "1" Builder
 Builder <|.. ConcreteBuilder1
 Builder <|.. ConcreteBuilder2
@@ -158,6 +161,9 @@ var result = builder.GetResult();
 ```
 
 ## 講師舉的另一個例子
+1. Decorators 建立 Builder
+2. 建立 Director 完成建立的過程
+
 撰寫讀寫檔功能，寫檔時可以依需求先做 Base64、壓縮、AED 加密，或是 Base64、壓縮、DES 加密或是 壓縮、Base64、AED 加密
 
 <br/>IFileProcess 介面

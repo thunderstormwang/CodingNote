@@ -4,6 +4,7 @@
 + 將一對多的關係改變為一對一。(以 Line 為例，你的 line 是連到伺服器，不是連到與你聊天的每個人)
 + 常常與 Observer pattern 在一起使用。
 
+## 類別圖
 ```mermaid
 classDiagram
 class IMediator {
@@ -56,13 +57,16 @@ Colleague <.. Mediator
 + Colleague
   + 每一個 Colleague 要和其他的 Colleague 通訊時，必須透過 Mediator。
 
-<br/>Mediator 抽象類別、子類別
+<br/>IMediator 介面
 ```csharp
 public interface IMediator
 {
     void Send(Colleague colleague, string message);
 }
+```
 
+<br/>Mediator 子類別
+```csharp
 public class ConcreteMediator : IMediator
 {
     public ConcreteColleague1 Colleague1 { private get; set; }
@@ -146,7 +150,9 @@ c1.Send("XYZ");
 c2.Send("12345");
 ```
 
-## 另一個例子，使用 Event，且省略 Mediator 的抽象
+## 另一個寫法
++ Mediator 的抽象可以省略，尤其當一個 Colleague 只會和一個 Mediator 通訊的時候。
++ 利用事件來當作變更通知。
 
 <br/>ConcreteMediator 類別
 ```csharp
@@ -219,3 +225,5 @@ mediator.AddColleague(c2);
 c1.Send("XYZ");
 c2.Send("12345");
 ```
+
+## todo 修改 observer 的範例

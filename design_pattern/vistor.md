@@ -4,6 +4,7 @@
 + 讓複雜物件結構的操作能夠易於拓展。
 + 分離資料結構與其操作。→如果你的需求只有這個，用 extension method 較簡單
 
+## 類別圖
 ```mermaid
 classDiagram
 class ObjectStructure {
@@ -50,16 +51,20 @@ IElement <|-- ElementB
 IVisitor <|.. PropertyVisitor
 ```
 
-<br/>Element 類別
+<br/>IElement 介面
 ```csharp
 public interface IElement
 {
     void Accept(IVisitor visitor);
 }
+```
 
+<br/>Element 子類別
+```csharp
 public class ElementA : IElement
 {
     public int X { get; set; }
+    
     public void Accept(IVisitor visitor)
     {
         visitor.Visit(this);
@@ -69,6 +74,7 @@ public class ElementA : IElement
 public class ElementB : IElement
 {
     public int Y { get; set; }
+
     public void Accept(IVisitor visitor)
     {
         visitor.Visit(this);
@@ -76,14 +82,17 @@ public class ElementB : IElement
 }
 ```
 
-<br/>Vistor 類別
+<br/>IVistor 介面
 ```csharp
 public interface IVisitor
 {
     void Visit(ElementA element);
     void Visit(ElementB element);
 }
+```
 
+<br/>PropertyVisitor 類別
+```csharp
 public class PropertyVisitor : IVisitor
 {
     public void Visit(ElementA element)
@@ -125,6 +134,7 @@ public class ObjectStructure
 ```csharp
 PropertyVisitor visitor = new PropertyVisitor();
 ObjectStructure o = new ObjectStructure();
+
 foreach (var item in o.Elements)
 {
     item.Accept(visitor);
