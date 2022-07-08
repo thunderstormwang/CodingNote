@@ -1,11 +1,26 @@
 # Design Pattern - Prototype
 
-## todo 農夫渡河
-
+- [Design Pattern - Prototype](#design-pattern---prototype)
+  - [概觀](#概觀)
+  - [+ 可與其他的創建模式結合。](#-可與其他的創建模式結合)
+  - [類別圖](#類別圖)
+  - [+ 透過呼叫Clone method，產生新的執行個體。](#-透過呼叫clone-method產生新的執行個體)
+  - [自己實作 IPrototype 介面](#自己實作-iprototype-介面)
+  - [善用 .Net Framework](#善用-net-framework)
+    - [.Net 提供的 ICloneable 介面](#net-提供的-icloneable-介面)
+  - [複製的作法有分淺層複製(Shallow Copy)和深層複製(Deep Copy)](#複製的作法有分淺層複製shallow-copy和深層複製deep-copy)
+    - [每個物件皆實作 ICloneable](#每個物件皆實作-icloneable)
+    - [JsonConver 序列化](#jsonconver-序列化)
+    - [BinaryFormatter 序列化](#binaryformatter-序列化)
+    - [Prototype Manager](#prototype-manager)
+    - [Abstract Factory + Prototype Manager](#abstract-factory--prototype-manager)
+      - [類別圖](#類別圖-1)
+---
+## 概觀
 + 使用原型執行個體指定創建的物件型別，並且透過複製來創建這些物件。
 + 提升複雜物件的創建。
 + 可與其他的創建模式結合。
-
+---
 ## 類別圖
 ```mermaid
 classDiagram
@@ -31,10 +46,9 @@ IPrototype <|-- MyRectangle
   + 具體實作自我複製的操作介面(範例中的 MyRectangle)，藉以複製執行個體。
 + Client
   + 透過呼叫Clone method，產生新的執行個體。
-
+---
 ## 自己實作 IPrototype 介面
-
-<br/>自定義 IPrototype 介面
+自定義 IPrototype 介面
 ```csharp
 public interface IPrototype
 {
@@ -67,7 +81,7 @@ o1.Width = 8;
 
 var o2 = (MyRectangle)o1.Clone();
 ```
-
+---
 ## 善用 .Net Framework
 + ICloneable Interface
 + Object.MemberwiseClone Method
@@ -75,6 +89,8 @@ var o2 = (MyRectangle)o1.Clone();
   + 建立物件的淺層複製
   + 會略過建構式
   + 深層複製的作法
+
+<br/>
 
 ### .Net 提供的 ICloneable 介面
 MyRectangle 類別，直接繼承 C# 提供的 ICloneable 類別，所以須實作 Clone 函式
@@ -107,7 +123,7 @@ o1.Width = 8;
 
 var o2 = (MyRectangle)o1.Clone();
 ```
-
+---
 ## 複製的作法有分淺層複製(Shallow Copy)和深層複製(Deep Copy)
 Shallow Copy 只會複製 Value Type 的 Property，如果該 Property 是 Reference Type，將不會被複製，只會複製參考，也就是被複製出來的物件的 Reference Type 的 Property 跟原物件的相同 Reference Type 的 Property 會指向同一個參考。
 <br/>Shallow Copy 可以用 C# 提供的函式的 MemberwiseClone 去達成，
@@ -115,6 +131,8 @@ Shallow Copy 只會複製 Value Type 的 Property，如果該 Property 是 Refer
 + 每個物件皆實作 ICloneable
 + 序列化，某些物件無法被序列化
 + 反射
+
+<br/>
 
 ### 每個物件皆實作 ICloneable
 Class1 類別，須實作 ICloneable
@@ -168,6 +186,8 @@ var o2 = (MyClass2)o1.Clone();
 Console.WriteLine("ReferenceEquals(o1.Data, o2.Data) = " + object.ReferenceEquals(o1.Data, o2.Data));
 ```
 
+<br/>
+
 ### JsonConver 序列化
 
 <br/>要被複製的類別
@@ -206,13 +226,16 @@ var o2 = (MyClass2)o1.Clone();
 Console.WriteLine("ReferenceEquals(o1.Data, o2.Data) = " + object.ReferenceEquals(o1.Data, o2.Data));
 ```
 
+<br/>
+
 ### BinaryFormatter 序列化
 
 todo ...
 
-### Prototype Manager
+<br/>
 
-<br/>產品A 類別
+### Prototype Manager
+產品A 類別
 ```csharp
 public abstract class AbstractProductA : ICloneable
 {
@@ -310,6 +333,8 @@ public class ProductsContext
 var o = ProductsContext.Manager.GetPrototype("ProductA1");
 Console.WriteLine(o.GetType().Name);
 ```
+
+<br/>
 
 ### Abstract Factory + Prototype Manager
 

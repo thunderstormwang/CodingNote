@@ -1,9 +1,17 @@
 # Design Pattern - Vistor
 
+- [Design Pattern - Vistor](#design-pattern---vistor)
+  - [概觀](#概觀)
+  - [類別圖](#類別圖)
+    - [pseudo code](#pseudo-code)
+
+---
+## 概觀
 + 定義一個能夠作用某個資料結構中各個元素的操作，在不需要修改原有資料結構的狀況下去拓展適用於這些元素的操作。
 + 讓複雜物件結構的操作能夠易於拓展。
 + 分離資料結構與其操作。→如果你的需求只有這個，用 extension method 較簡單
 
+---
 ## 類別圖
 ```mermaid
 classDiagram
@@ -51,7 +59,10 @@ IElement <|-- ElementB
 IVisitor <|.. PropertyVisitor
 ```
 
-<br/>IElement 介面
+<br/>
+
+### pseudo code
+IElement 介面
 ```csharp
 public interface IElement
 {

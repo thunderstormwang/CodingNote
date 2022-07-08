@@ -1,9 +1,18 @@
 # Design Pattern - Mediator
 
+- [Design Pattern - Mediator](#design-pattern---mediator)
+  - [概觀](#概觀)
+  - [類別圖](#類別圖)
+    - [pseudo code](#pseudo-code)
+  - [另一個寫法](#另一個寫法)
+
+---
+## 概觀
 + 定義一個中介物件，將另外一群物件的互動方式封裝起來，中介者使得這一群物件之間可以不需要直接認識對方，也不需要直接互動，降低他們的耦合關係，並且能夠獨立地改變他們之間的互動操作。
 + 將一對多的關係改變為一對一。(以 Line 為例，你的 line 是連到伺服器，不是連到與你聊天的每個人)
 + 常常與 Observer pattern 在一起使用。
 
+---
 ## 類別圖
 ```mermaid
 classDiagram
@@ -57,7 +66,10 @@ Colleague <.. Mediator
 + Colleague
   + 每一個 Colleague 要和其他的 Colleague 通訊時，必須透過 Mediator。
 
-<br/>IMediator 介面
+<br/>
+
+### pseudo code
+IMediator 介面
 ```csharp
 public interface IMediator
 {
@@ -149,7 +161,7 @@ mediator.Colleague2 = c2;
 c1.Send("XYZ");
 c2.Send("12345");
 ```
-
+---
 ## 另一個寫法
 + Mediator 的抽象可以省略，尤其當一個 Colleague 只會和一個 Mediator 通訊的時候。
 + 利用事件來當作變更通知。
@@ -225,5 +237,3 @@ mediator.AddColleague(c2);
 c1.Send("XYZ");
 c2.Send("12345");
 ```
-
-## todo 修改 observer 的範例

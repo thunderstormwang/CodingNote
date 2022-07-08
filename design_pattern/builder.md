@@ -1,5 +1,13 @@
 # Design Pattern - Builder
 
+- [Design Pattern - Builder](#design-pattern---builder)
+  - [概觀](#概觀)
+  - [類別圖](#類別圖)
+    - [pseudo code](#pseudo-code)
+  - [範例 - 撰寫讀寫檔功能](#範例---撰寫讀寫檔功能)
+
+---
+## 概觀
 + 將一個複雜物件的建構與它的表示分離，使得同樣的建構過程可以創建出不同的配置或佈局。
 + Builder 提供建構物件的方法
 + 最重要的人物是 Director
@@ -54,6 +62,9 @@ Builder <|.. ConcreteBuilder2
 在下列範例程式碼中，Director 依賴抽象 Builder。
 但是 GetResult 函式放在 Builder 子類別，因為不同的 ConcreteBuilder 產出的 Product 可能互相沒有關係，所以 Client 端可能需明確地指定 Builder 子類別
 
+<br/>
+
+### pseudo code
 Product 類別
 ```csharp
 public class Product
@@ -159,12 +170,12 @@ Builder builder = new ConcreteBuilder1();
 Director director = new Director(builder);
 var result = builder.GetResult();
 ```
+---
 
-## 講師舉的另一個例子
+## 範例 - 撰寫讀寫檔功能
+撰寫讀寫檔功能，寫檔時可以依需求先做 Base64、壓縮、AED 加密，或是 Base64、壓縮、DES 加密或是 壓縮、Base64、AED 加密
 1. Decorators 建立 Builder
 2. 建立 Director 完成建立的過程
-
-撰寫讀寫檔功能，寫檔時可以依需求先做 Base64、壓縮、AED 加密，或是 Base64、壓縮、DES 加密或是 壓縮、Base64、AED 加密
 
 <br/>IFileProcess 介面
 ```csharp

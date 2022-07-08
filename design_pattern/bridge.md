@@ -1,11 +1,25 @@
 # Design Pattern - Bridge
 
+- [Design Pattern - Bridge](#design-pattern---bridge)
+  - [概觀](#概觀)
+  - [類別圖](#類別圖)
+    - [pseudo code](#pseudo-code)
+  - [範例 - BMI 重構](#範例---bmi-重構)
+    - [原本寫法](#原本寫法)
+    - [採用 bridge 模式，從繼承改用組合](#採用-bridge-模式從繼承改用組合)
+  - [Bridge + Adapter](#bridge--adapter)
+
+---
+## 概觀
 + 將抽象與實作解耦合，使得兩邊可以獨立的變化。
 
+---
 ## 類別圖
 ```mermaid
 classDiagram
+class Client
 class Abstraction {
+    <<abstract>>
     +IImplementor _implementor
     #Abstraction(IImplementor implementor)
     +OperationImp()
@@ -27,6 +41,7 @@ class ImplementorB {
     +OperationImp()
 }
 
+Client ..> Abstraction
 Abstraction <|-- RefinedAbstraction
 Abstraction "1"..> "1" IImplementor
 IImplementor <|-- ImplementorA
@@ -46,8 +61,10 @@ IImplementor <|-- ImplementorB
 + ConcreateImplementor
   + 圖中的 ImplementorA 和 ImplementorB，為 IImplementor 的具體實作。
 
-此例中，RefindAbstraction 才是面對外界的介面
+<br/>
 
+### pseudo code
+Abstraction 抽象類別
 ```csharp
 public abstract class Abstraction
 {
@@ -62,6 +79,7 @@ public abstract class Abstraction
 }
 ```
 
+<br/>RefinedAbstraction 類別
 ```csharp
 public class RefinedAbstraction : Abstraction
 {
@@ -79,12 +97,16 @@ public class RefinedAbstraction : Abstraction
 }
 ```
 
+<br/>IImplementor 介面
 ```csharp
 public interface IImplementor
 {
     void OperationImp();
 }
+```
 
+<br/>IImplementor 子類別
+```csharp
 public class ImplementorA : IImplementor
 {
     public void OperationImp()
@@ -104,14 +126,17 @@ public class ImplementorB : IImplementor
 
 <br/>client 端程式
 ```csharp
-RefinedAbstraction refinedAbstraction = new RefinedAbstraction(new ImplementorA());
-refinedAbstraction.Operation();
+Abstraction ab = new RefinedAbstraction(new ImplementorA());
+ab.Operation();
 ```
 
-## 另一個例子，BMI 重構
+## 範例 - BMI 重構
 + 利用 Bridge Pattern 重構，讓繼承轉為聚合
-  
-<br/>Human 抽象類別，裡面包含 BMI 的計算
+
+<br/>
+
+### 原本寫法
+Human 抽象類別，裡面包含 BMI 的計算
 ```csharp
 public abstract class Human
 {
@@ -212,7 +237,10 @@ public class Woman : Human
 
 
 <br/>就如同[多用組合，少用繼承](composition_inheritance.md)所解釋的，這會讓基底類別很肥大。
-<br/>所以採用 bridge 模式，從繼承改用組合
+
+<br/>
+
+### 採用 bridge 模式，從繼承改用組合
 
 Human 抽象類別
 ```csharp
@@ -325,12 +353,12 @@ public class WomanComment : IBMIComment
     }
 }
 ```
-
+---
 ## Bridge + Adapter
 + 擴張 Macro Command 範例，除了原有寫入檔案的功能外，現在又要整合 Socket 送資料的功能。
 + 在 Command 的實作中採用 Bridge Pattern。
 
-<br/>todo 加解說
+<br/>FileProcess 類別，既有類別
 ```csharp
 public class FileProcess
 {
@@ -338,6 +366,7 @@ public class FileProcess
     {
         File.WriteAllBytes(path, data);
     }
+
     public byte[] Read(string path)
     {
         if (File.Exists(path))
@@ -352,7 +381,7 @@ public class FileProcess
 }
 ```
 
-<br/>todo 加解說
+<br/>Base64Processor 類別，既有類別
 ```csharp
 public class Base64Processor
 {
@@ -361,11 +390,16 @@ public class Base64Processor
         var bytes = Convert.FromBase64String(Encoding.UTF8.GetString(base64Bytes));
         return bytes;
     }
+
     public byte[] Encode(byte[] data)
     {
         return Encoding.UTF8.GetBytes(Convert.ToBase64String(data));
     }
 }
+```
+
+<br/>DESCryptoProcessor 類別，既有類別
+```csharp
 public class DESCryptoProcessor
 {
     private byte[] key;
@@ -409,6 +443,10 @@ public class DESCryptoProcessor
         return outputBytes;
     }
 }
+```
+
+<br/>AESCryptoProcessor 類別，既有類別
+```csharp
 public class AESCryptoProcessor
 {
     private byte[] key;
@@ -452,6 +490,10 @@ public class AESCryptoProcessor
         return outputBytes;
     }
 }
+```
+
+<br/>GZipFileProcessor 類別，既有類別
+```csharp
 public class GZipFileProcessor
 {
     public byte[] Decompress(byte[] compressedBytes)
@@ -461,6 +503,7 @@ public class GZipFileProcessor
         outputBytes = Decompress(input).ToArray();
         return outputBytes;
     }
+
     private MemoryStream Decompress(Stream compressed)
     {
         var decompressed = new MemoryStream();
@@ -471,6 +514,7 @@ public class GZipFileProcessor
         decompressed.Seek(0, SeekOrigin.Begin);
         return decompressed;
     }
+
     public byte[] Compress(byte[] data)
     {
         byte[] outputBytes = null;
@@ -478,6 +522,7 @@ public class GZipFileProcessor
         outputBytes = Compress(input).ToArray();
         return outputBytes;
     }
+
     private MemoryStream Compress(Stream decompressed)
     {
         var compressed = new MemoryStream();
@@ -491,19 +536,18 @@ public class GZipFileProcessor
 }
 ```
 
-<br/>todo 加解說
+<br/>TcpCommunication 類別，Tcp Adapter
 ```csharp
-/// <summary>
-/// Tcp Adapter
-/// </summary>
 public class TcpCommunication :  IDisposable
 {
     private Socket client;
+
     public TcpCommunication()
     {
         client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         //...設定 client 所需的資訊
     }
+
     public bool Connect(string target)
     {
         string[] data = target.Split(':');
@@ -515,6 +559,7 @@ public class TcpCommunication :  IDisposable
         }
         return client.Connected;
     }
+
     public void Disconnect()
     {
         if (client.Connected)
@@ -522,6 +567,7 @@ public class TcpCommunication :  IDisposable
             client.Disconnect(true);
         }
     }
+
     public void Dispose()
     {
         if (client != null)
@@ -529,6 +575,7 @@ public class TcpCommunication :  IDisposable
             client.Dispose();
         }
     }
+
     public byte[] Receive()
     {
         if (client.Connected)
@@ -543,6 +590,7 @@ public class TcpCommunication :  IDisposable
             return null;
         }
     }
+
     public void Send(byte[] buffer)
     {
         if (client.Connected)
@@ -624,6 +672,7 @@ public class TcpProcessAdapter : IBytesProcessAdapter
 public abstract class BytesCommand
 {
     protected IBytesProcessAdapter _implementor;
+
     protected BytesCommand(IBytesProcessAdapter adapter)
     {
         _implementor = adapter;
@@ -640,10 +689,7 @@ public abstract class BytesWriteCommand : BytesCommand
 
     public abstract void Execute(string path, byte[] data);
 }
-```
 
-<br/>Command 實作
-```csharp
 public abstract class BytesReadCommand : BytesCommand
 {
     public BytesReadCommand(IBytesProcessAdapter adapter) : base(adapter)
@@ -651,7 +697,10 @@ public abstract class BytesReadCommand : BytesCommand
 
     public abstract byte[] Execute(string path);
 }
+```
 
+<br/>Command 實作
+```csharp
 public class Base64AesWriteCommand : BytesWriteCommand
 {
     private Base64Processor _base64Processor;
@@ -691,8 +740,8 @@ public class Base64AesReadCommand : BytesReadCommand
 ```csharp
 public class Invoker
 {
-    internal BytesWriteCommand WriteCommand { get; set; }
-    internal BytesReadCommand ReadCommand { get; set; }
+    public BytesWriteCommand WriteCommand { get; set; }
+    public BytesReadCommand ReadCommand { get; set; }
 
     public void Write(string path, byte[] data)
     {

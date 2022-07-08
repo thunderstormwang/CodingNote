@@ -1,9 +1,20 @@
 # Design Pattern - Factory Method
 
+- [Design Pattern - Factory Method](#design-pattern---factory-method)
+  - [概觀](#概觀)
+  - [+ 降低客戶端程式碼與產品類別的耦合度。](#-降低客戶端程式碼與產品類別的耦合度)
+  - [類別圖](#類別圖)
+    - [pseudo code](#pseudo-code)
+  - [Factory Method for Adapter](#factory-method-for-adapter)
+    - [第二種寫法，搭配 Template Method](#第二種寫法搭配-template-method)
+  - [泛型工廠](#泛型工廠)
+    - [類別圖](#類別圖-1)
+---
+## 概觀
 + 定義一個可以用來創建物件的介面，讓這個創建介面的子類別去決定該實例化哪一個產品的實作類別。
 + 工廠方法讓一個產品類別的實例化遞延到其子工廠類別。
 + 降低客戶端程式碼與產品類別的耦合度。
-
+---
 ## 類別圖
 ```mermaid
 classDiagram
@@ -60,7 +71,10 @@ AbstractProduct <|-- ProductB
 + Factory
   + 依照 AbstractFactory 介面實作的具體工廠類別(圖中的Factory1 和Factory2)，具現實際產生具體產品的職責。
 
-<br/>工廠類別
+<br/>
+
+### pseudo code
+工廠類別
 ```csharp
 public abstract class AbstractFactory
 {
@@ -110,7 +124,7 @@ AbstractFactory factory = new FactoryA()
 AbstractProduct product = factory.CreateInstance();
 product.Execute();
 ```
-
+---
 ## Factory Method for Adapter
 + 為前面的 Communication Adapter 建立 Factory Method，分離創建 ICommunication 的過程。
 
@@ -213,9 +227,9 @@ ICommunication commucation = (new TcpFactory()).GetInstance();
 commucation.Connect("192.168.1.1:5555");
 ```
 
-### 第二種寫法
+### 第二種寫法，搭配 Template Method
 
-<br/>工廠類別，搭配 Template Method
+<br/>改寫前例的工廠類別，搭配 Template Method 建立產品類別
 ```csharp
 public abstract class Factory
 {
@@ -257,11 +271,13 @@ public class SerialPortFactory : Factory
 ICommunication commucation = (new SerialPortFactory()).GetInstance();
 commucation.Connect("COM2");
 ```
-
+---
 ## 泛型工廠
 + Factory Method 的一種型態
 + 泛型工廠的實作
 + 動態載入的應用
+
+<br/>
 
 ### 類別圖
 
@@ -304,7 +320,7 @@ ICommunication <|-- TcpCommunication
 ICommunication <|-- SerialCommunication
 ```
 
-<br/>工廠類別
+<br/>泛型工廠類別，改寫前例的工廠類別
 ```csharp
 public class GenericFactory
 {

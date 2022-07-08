@@ -1,10 +1,26 @@
 # Design Pattern - Adapter
 
+- [Design Pattern - Adapter](#design-pattern---adapter)
+  - [概觀](#概觀)
+  - [Object Adapter](#object-adapter)
+    - [類別圖](#類別圖)
+    - [pseudo code](#pseudo-code)
+  - [Class Adapter](#class-adapter)
+    - [類別圖](#類別圖-1)
+    - [pseudocode](#pseudocode)
+  - [範例 - Tcp 和 Serial Port 的 adapter](#範例---tcp-和-serial-port-的-adapter)
+    - [Object Adapter](#object-adapter-1)
+    - [Class Adapter](#class-adapter-1)
+---
+## 概觀
 使用 Adapter 的理由
 + 兩個或以上的類別做相同或類似的事情，但擁有不同的介面
 + 如果這些類別擁有一個共同的介面，客戶端程式碼可以更簡潔、更容易維護
 + 你要使用某一個第三方類別庫，或是既有的框架；而你無法改變它們的程式碼來適應你已經寫好的客戶端程式。
 
+可分為 Object Adapter 和 Class Adapter
+
+---
 ## Object Adapter
 ### 類別圖
 Adapter 類別裡包含 Adaptee 類別的實體並繼承和實作 ITarget 介面，讓 Client 端程式呼叫 Execute 即可使用 Adaptee 類別的實體 
@@ -43,7 +59,10 @@ Adapter "1" --> "1" Adaptee
 + Adaptee
   + 既有存在但無法符合 ITarget 定義的物件，需要被轉換才能為 Client 所使用。
 
-<br/>Adaptee 類別，既有類別，假設無法更改
+<br/>
+
+### pseudo code
+Adaptee 類別，既有類別，假設無法更改
 ```csharp
 public class Adaptee
 {
@@ -91,6 +110,8 @@ target.Execute();
 Adapter 類別繼承了 ITarget 介面和 Adaptee 類別。
 <br/>**講師特別說明 C# 不要這樣用**
 
+<br/>
+
 ### 類別圖
 ```mermaid
 classDiagram
@@ -117,7 +138,10 @@ ITarget <|-- Adapter
 Adaptee <|-- Adapter
 ```
 
-<br/>Adaptee 類別，既有類別，假設無法更改
+<br/>
+
+### pseudocode
+Adaptee 類別，既有類別，假設無法更改
 ```csharp
 public class Adaptee
 {
@@ -155,10 +179,12 @@ public class Adapter : Adaptee, ITarget
 ITarget target = new Adapter();
 target.Execute();
 ```
-
-## 第二個例子
+---
+## 範例 - Tcp 和 Serial Port 的 adapter
 + 客戶需要一個通訊程式，需要同時支援 Tcp 與Serial Port 通訊。
 + 創建一個介面讓客戶端程式能夠不直接切換 .Net Framework 中的 Socket class 與 Serialport class。並且在新增通訊需求時，能夠讓客戶端程式的變動最小化。
+
+<br/>
 
 ### Object Adapter
 
@@ -325,6 +351,8 @@ public static string GetReceiveString(byte[] buffer)
     return Encoding.UTF8.GetString(buffer);
 }
 ```
+
+<br/>
 
 ### Class Adapter
 **C# 不要使用這種形式**

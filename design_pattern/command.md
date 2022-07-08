@@ -1,8 +1,19 @@
 # Design Pattern - Command
 
+- [Design Pattern - Command](#design-pattern---command)
+  - [概觀](#概觀)
+  - [+ 將命令的請求方與執行方解耦。](#-將命令的請求方與執行方解耦)
+  - [類別圖](#類別圖)
+    - [pseudo code](#pseudo-code)
+  - [依序執行的 Command Pattern](#依序執行的-command-pattern)
+  - [具有復原功能的 Command Pattern](#具有復原功能的-command-pattern)
+  - [Macro Command](#macro-command)
+
+---
+## 概觀
 + 將一個請求封裝成一個物件，讓你能夠使用各種不同的訊息、佇列、紀錄以及支援復原功能加以參數化。
 + 將命令的請求方與執行方解耦。
-
+---
 ## 類別圖
 ```mermaid
 classDiagram
@@ -60,7 +71,10 @@ Receiver "1" <.. "1" Command
   + 指揮 Command 執行命令。
   + 如果要擴充功能：命令重覆執行、復原功能(搭配 Momento)，只要修改這裡
 
-<br/Command 抽象類別
+<br/>
+
+### pseudo code
+Command 抽象類別
 ```csharp
 public abstract class Command
 {
@@ -75,7 +89,7 @@ public abstract class Command
 }
 ```
 
-<br/ConcreteCommand 類別，實作執行命令的程式
+<br/>ConcreteCommand 類別，實作執行命令的程式
 ```csharp
 public class CommandA : Command
 {
@@ -155,7 +169,7 @@ var command = new CommandA(receiver);
 invoker.SetCommnad(command);
 invoker.Action();
 ```
-
+---
 ## 依序執行的 Command Pattern
 + 前述的 Invoker 內部是單一個 Command 型別欄位(屬性)，呼叫 Action method 只能執行一個Command。
 + 若改為集合，就可以讓 Invoker 一次執行多個命令。
@@ -332,17 +346,12 @@ foreach (var item in results)
     Console.WriteLine($"Source : {item.Source } , Result ={item.Result}");
 }
 ```
-
+---
 ## 具有復原功能的 Command Pattern
 + 一樣使用 Command 集合，但在這種情境下的集合代表的是歷史紀錄，用以作為復原時使用。
 + 這種情境多半搭配 Memento Pattern。
 
-<br/>Client 端程式
-```csharp
-
-```
-
-<br/>Client 端程式，這個就是 Receiver
+<br/>Calculator 類別，這個就是 Receiver
 ```csharp
 public class Calculator
 {
@@ -496,6 +505,11 @@ invoker.Undo(3);
 Console.WriteLine("Redo");
 invoker.Redo(2);
 ```
+---
+
+## Macro Command
++ 巨集式的命令，這樣情境通常是一個 Commmand 呼叫多個 Receivers 來協同完成工作。
++ 這種情境下的 Receivers 會直接定義在Command 的具體實作類別內部，而不是由建構子注入。
 
 <br/>用 FakeDataSource 模擬假資料，如下程式碼
 ```csharp
@@ -530,10 +544,6 @@ public class FakeDataSource
     }
 }
 ```
-
-## Macro Command
-+ 巨集式的命令，這樣情境通常是一個 Commmand 呼叫多個 Receivers 來協同完成工作。
-+ 這種情境下的 Receivers 會直接定義在Command 的具體實作類別內部，而不是由建構子注入。
 
 <br/>IFileWriteCommand 介面
 ```csharp

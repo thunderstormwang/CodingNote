@@ -1,12 +1,22 @@
 # Design Pattern - State
 
-## todo 農夫渡河
-
+- [Design Pattern - State](#design-pattern---state)
+  - [- 變形 – 結合 Registry of Singleton](#--變形--結合-registry-of-singleton)
+  - [概觀](#概觀)
+  - [+ 若狀態切換得很頻繁，程式會一直在 new 新的狀態類別，可能有一直在重整 heap 空間的效能問題，可用其它方法避免](#-若狀態切換得很頻繁程式會一直在-new-新的狀態類別可能有一直在重整-heap-空間的效能問題可用其它方法避免)
+  - [類別圖](#類別圖)
+    - [pseudo code](#pseudo-code)
+  - [變形 – 將狀態以回傳方式傳給 Context](#變形--將狀態以回傳方式傳給-context)
+    - [類別圖](#類別圖-1)
+      - [pseudo code](#pseudo-code-1)
+  - [變形 – 結合 Registry of Singleton](#變形--結合-registry-of-singleton)
+---
+## 概觀
 + 當一個物件(StateContext)的內在狀態(State)改變時允許改變其行為，這個物件看起來就像是改變了其類別。
 + 讓物件自己決定狀態的轉變，藉以消弭複雜的判斷邏輯。
 + 以農夫渡河為例，農夫在左邊，就一定是從左邊移到右邊，且農夫之後在右邊；農夫在右邊，就一定是從右邊移到左邊，且農夫之後在左邊
 + 若狀態切換得很頻繁，程式會一直在 new 新的狀態類別，可能有一直在重整 heap 空間的效能問題，可用其它方法避免
-
+---
 ## 類別圖
 ```mermaid
 classDiagram
@@ -47,7 +57,10 @@ AbstractState <|-- State2
 + ConcreteState
   + AbstractState 的實作，具體實作出特定狀態的行為內容。
 
-<br/>AbstractState 抽象類別，本身沒有儲存狀態，因為型別本身就是狀態
+<br/>
+
+### pseudo code
+AbstractState 抽象類別，本身沒有儲存狀態，因為型別本身就是狀態
 ```csharp
 public abstract class AbstractState
 {
@@ -109,7 +122,7 @@ for (int i = 0; i < 10; i++)
     context.Request();
 }
 ```
-
+---
 ## 變形 – 將狀態以回傳方式傳給 Context
 
 ### 類別圖
@@ -143,7 +156,9 @@ IState <|-- State1
 IState <|-- State2
 ```
 
-<br/>IState 介面，將下一個 State 物件傳回
+<br/>
+#### pseudo code
+IState 介面，將下一個 State 物件傳回
 ```csharp
 public interface IState
 {

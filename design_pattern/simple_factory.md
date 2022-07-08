@@ -1,23 +1,37 @@
 # Design Pattern - Simple Factory
 
+- [Design Pattern - Simple Factory](#design-pattern---simple-factory)
+  - [概觀](#概觀)
+  - [Simple Factory for Adapter](#simple-factory-for-adapter)
+    - [利用分支運算決定實體](#利用分支運算決定實體)
+    - [利用 Attribute 決定實體](#利用-attribute-決定實體)
+    - [利用資源字典決定實體](#利用資源字典決定實體)
+---
+## 概觀
 + 利用分支運算( if else, switch case)決定實體
 + 如果要增加類別，就必須修改程式碼( if else, switch case)，這個動作有些人認為違反開閉原則
 + 改善分支運算的問題
   + 使用資源字典
   + 使用 Attribute
 
+<br/>
+
 ## Simple Factory for Adapter
++ 為前面的 Communication Adapter 建立使用判斷式的 Simple Factory，分離創建 ICommunication 的過程。
+
+<br/>
 
 ### 利用分支運算決定實體
-
-<br/>工廠類別
+產品列舉
 ```csharp
 public enum CommucationType
 {
     Tcp,
     SerialPort
 }
-
+```
+<br/>工廠類別
+```csharp
 public class CommucationFactory
 {
     public static ICommunication GetInstance(CommucationType type)
@@ -35,7 +49,7 @@ public class CommucationFactory
 }
 ```
 
-<br/>產品介面，也 Adapter 的 ITarget
+<br/>產品介面，也是 Adapter 的 ITarget
 ```csharp
 public interface ICommunication
 {
@@ -110,7 +124,20 @@ var commucation = CommucationFactory.GetInstance(CommucationType.Tcp);
 commucation.Connect("192.168.0.1:8888");
 ```
 
+<br/>
+
 ### 利用 Attribute 決定實體
+產品列舉
+```csharp
+public enum CommunicationType
+{
+    [Communication(typeof(TcpCommunication))]
+    Tcp,
+    [Communication(typeof(SerialCommunication))]
+    SerialPort
+}
+```
+
 <br/>工廠類別
 ```csharp
 public class CommunicationAttribute : Attribute
@@ -124,14 +151,6 @@ public class CommunicationAttribute : Attribute
     {
         get; private set;
     }
-}
-
-public enum CommunicationType
-{
-    [Communication(typeof(TcpCommunication))]
-    Tcp,
-    [Communication(typeof(SerialCommunication))]
-    SerialPort
 }
 ```
 
@@ -163,16 +182,20 @@ public class CommunicationFactory
 
 <br/>產品類別、Client 端程式 同上
 
-### 利用資源字典決定實體
+<br/>
 
-<br/>建立資源搜尋器
+### 利用資源字典決定實體
+產品列舉
 ```csharp
 public enum CommunicationType
 {
     Tcp,
     SerialPort
 }
+```
 
+<br/>建立資源搜尋器
+```csharp
 public class CommunicationResources
 {
     private static Dictionary<CommunicationType, Type> _resources;

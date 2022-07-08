@@ -1,12 +1,19 @@
 # Design Pattern - Momento
 
-## todo 農夫渡河
+- [Design Pattern - Momento](#design-pattern---momento)
+  - [概觀](#概觀)
+  - [類別圖](#類別圖)
+    - [pseudo code](#pseudo-code)
 
-## 類別圖
+---
+
+## 概觀
 + 在不破壞封裝性的前提下，捕獲一個物件的內部狀態，並在該物件外保存這個狀態，這樣就可以將物件恢復到之前的狀態。
 + 就像玩遊戲，打王前先儲存進度，打王中不幸死掉，就載入之前進度
 + 可搭配 Stack，可做到連續倒退2次以上的步驟
 
+---
+## 類別圖
 ```mermaid
 classDiagram
 class Client
@@ -42,7 +49,10 @@ CareTaker --> Momento
   + 負責 Memento 物件的安全
   + 絕不會操弄或檢視 Memento 的內容。
 
-<br/>Momento 類別
+<br/>
+
+### pseudo code
+Momento 類別
 ```csharp
 public class Memento
 {

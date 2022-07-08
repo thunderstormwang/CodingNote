@@ -1,11 +1,20 @@
-# Design Pattern + Strategy
+# Design Pattern - Strategy
 
-## todo 農夫渡河
-
+- [Design Pattern - Strategy](#design-pattern---strategy)
+  - [概觀](#概觀)
+  - [類別圖](#類別圖)
+    - [pseudo code](#pseudo-code)
+  - [主流寫法 - 由 Context 決定策略(對 Client 端隱藏策略類別)](#主流寫法---由-context-決定策略對-client-端隱藏策略類別)
+  - [使用委派簡化 Strategy 物件](#使用委派簡化-strategy-物件)
+    - [類別圖](#類別圖-1)
+  - [Chain Of Responsibility vs State vs Strategy](#chain-of-responsibility-vs-state-vs-strategy)
+---
+## 概觀
 + 定義一組演算法，將每個演算法都封裝起來，並且使它們可以互換，在不影響外界的情況下個別抽換所使用的演算法。
 + 具體策略暴露的問題。
-+ 跟 State 很像，只是狀態由外部決定
++ 跟 State 很像，只是狀態由外部決定。
 
+---
 ## 類別圖
 ```mermaid
 classDiagram
@@ -49,7 +58,10 @@ AbstractStrategy <|-- Strategy2
 + Client
   + 呼叫StrategyContext，將外部狀態(條件)傳遞給 StrategyContext，若 StrategyContext 具有回傳值則取回執行結果。
 
-<br/>抽象策略類別
+<br/>
+
+### pseudo code
+抽象策略類別
 ```csharp
 public abstract class AbstractStrategy
 {
@@ -100,7 +112,7 @@ public class StrategyContext
 StrategyContext context = new StrategyContext(new Strategy1());
 context.ExecuteStrategy();
 ```
-
+---
 ## 主流寫法 - 由 Context 決定策略(對 Client 端隱藏策略類別)
 跟 Simple Factory 很像，講師解釋：
 <br/>Strategy 對 Client 端程式來講，只需關心執行的結果，不必在意策略物件的實體是什麼，Simple Factory，在 Client 來講，關心的是回傳的物件實體
@@ -173,10 +185,12 @@ public class StrategyFactory
 StrategyContext context = new StrategyContext();
 context.ExecuteStrategy("Strategy2");
 ```
-
+---
 ## 使用委派簡化 Strategy 物件
 + 當 ConcreteStraytegy 本身只是個單純的方法時，可以採用委派的方式來簡化 Strategy。
 + 此時的 StrategyContext 內部持有一組Strategies 的委派集合，並且制定讓 Client 呼叫的介面
+
+<br/>
 
 ### 類別圖
 ```mermaid
@@ -227,7 +241,7 @@ public class StrategyContext
     }
 }
 ```
-
+---
 ## Chain Of Responsibility vs State vs Strategy
 Chain Of Responsibility：1)如果不只一個物件需要處理請求、或不確定要處理請求的物件數量，2)每次處理請求皆須將請求鏈重頭跑一次才知道哪些物件要處理
 <br/>State：只有一個物件要處理請求，且狀態由內部決定，如果需要外部才能決定，那應該用 Strategy

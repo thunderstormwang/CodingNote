@@ -1,5 +1,14 @@
 # Design Pattern - Iterator
 
+- [Design Pattern - Iterator](#design-pattern---iterator)
+  - [概觀](#概觀)
+  - [用一個類別去實作兩個介面](#用一個類別去實作兩個介面)
+  - [用兩個類別去分別實作兩個介面](#用兩個類別去分別實作兩個介面)
+  - [yield return](#yield-return)
+  - [For 和 foreach 是不一樣的](#for-和-foreach-是不一樣的)
+
+---
+## 概觀
 + 提供一種方式能夠依序存取物件中的每一個元素，但不需要知道聚合物件(aggregate object)的內部細節。
 + 在C# 中可以用現有的功能來完成。
 + 實作或回傳IEnumerable 或IEnumerable<T>。
@@ -7,6 +16,7 @@
 
 在 C# 如果要自己實作，可繼承 IEnumrator 和 IEnumrable 介面
 
+---
 ## 用一個類別去實作兩個介面
 ```csharp
 public class MyIterator : IEnumerable<double>, IEnumerator<double>
@@ -72,6 +82,7 @@ foreach (double item in myIterator)
 }
 ```
 
+---
 ## 用兩個類別去分別實作兩個介面
 此類別實作 IEnumerable
 ```csharp
@@ -142,6 +153,7 @@ foreach (double item in myIterator)
 }
 ```
 
+---
 ## yield return
 C# 2.0 以後，可用 yield return，其它的 compiler 都幫你寫
 
@@ -172,7 +184,7 @@ foreach (double item in myIterator)
     Console.Write(item + " ");
 }
 ```
-
-<br/>For 和 foreach 是不一樣的
+---
+## For 和 foreach 是不一樣的
 + for 看 index
 + Foreach 則是回傳後，下次再進來，則從下一個地方開始，意即記住上次執行的地方(語法：yield return)

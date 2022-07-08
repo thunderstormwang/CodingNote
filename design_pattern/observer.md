@@ -1,5 +1,15 @@
 # Design Pattern - Obsersver
 
+- [Design Pattern - Obsersver](#design-pattern---obsersver)
+  - [類別圖](#類別圖)
+    - [pseudo code](#pseudo-code)
+  - [變形作法](#變形作法)
+  - [在 C# 可使用委派(delegate)、事件(event)](#在-c-可使用委派delegate事件event)
+    - [委派](#委派)
+    - [事件](#事件)
+
+---
+
 ## 類別圖
 ```mermaid
 classDiagram
@@ -32,7 +42,6 @@ IObserver <|-- ConcreteObserver
 
 Subject ..> IObserver
 ```
-
 + Subject
   + 被觀察的對象，也就是通知者的抽象介面，通常是 abstract class
   + 具備 IObserver 的集合欄位。
@@ -48,7 +57,10 @@ Subject ..> IObserver
   + 具有一個指向 ConcreteSubject 物件的欄位。
   + 實作 IObserver 的 Update Method。
 
-<br/>IObserver 介面，觀察者的抽象
+<br/>
+
+### pseudo code
+IObserver 介面，觀察者的抽象
 ```csharp
 public interface IObserver
 {
@@ -140,7 +152,7 @@ ConcreteObserver o2 = new ConcreteObserver(s) { Name = "B" };
 
 s.SubjectState = "This is a dog";
 ```
-
+---
 ## 變形作法
 + ConcreteObserver(訂閱者) 不透過建構式持有ConcreteSubject(發行者)，而是透過 Update 方法的參數傳遞 ConcreteSubject。
 + 通常訂閱者持有的發行者不太會在執行時期發生變動，因此可能採取 object 型別作為傳入參數。
@@ -234,10 +246,9 @@ subject.AddObserver(new ConcreteObserver() { Name = "C" });
 
 subject.SubjectState = "Where have all the flowers gone ?";
 ```
-
+---
 ## 在 C# 可使用委派(delegate)、事件(event)
 ### 委派
-
 ConcreteSubject 類別
 ```csharp
 public delegate void NotifyHandler(ConcreteSubject subject);
@@ -359,6 +370,3 @@ s.SubjectState = "All I have to do is dream.";
 <br/>講師舉了其它例子
 + 在 C#要注意 memory leak，若 form2 是去訂閱 form1 的事件，在 form2 關閉時，需作 -= 委派或事件，不然記憶體不會被釋放
 + 實作自己的 Data Binding 的自動通知：實作 INotifyPropertyChanged
-
-## todo memory leak 例子
-## todo 資料繫結 例子

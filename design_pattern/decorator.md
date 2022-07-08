@@ -1,5 +1,16 @@
 # Design Pattern - Decorator
 
+- [Design Pattern - Decorator](#design-pattern---decorator)
+  - [概觀](#概觀)
+  - [類別圖](#類別圖)
+    - [pseudo code](#pseudo-code)
+  - [Decorator 存取檔案](#decorator-存取檔案)
+    - [原本寫法](#原本寫法)
+    - [用 Decorator 模式改寫](#用-decorator-模式改寫)
+    - [將上例加入 Extension Method](#將上例加入-extension-method)
+    - [Decorator with Adapter](#decorator-with-adapter)
+---
+## 概觀
 + 動態地為物件附加一些額外的職責，同時把持相同的介面。就擴展功能而言，裝飾模式提供了繼承機制的彈性替代方案。
 + 單獨加入職責給某個物件，而不是加入到整個類別。
 + 尤其對舊有物件要加入新職責的時候特別有用。
@@ -7,6 +18,7 @@
 
 由1、2點可知道，這個模式不是繼承
 
+---
 ## 類別圖
 ```mermaid
 classDiagram
@@ -56,7 +68,10 @@ Decorator <|-- ConcreteDecoratorB
 + ConcreteDecorator
   + Decorator 的具體實作，主要功能為增加職責到被裝飾的物件上，如圖中的ConcreteDecoratorA 與 ConcreteDecoratorB。
 
-<br/>Component 基底類別，可被 Decorator 動態增加職責的介面
+<br/>
+
+### pseudo code
+Component 基底類別，可被 Decorator 動態增加職責的介面
 ```csharp
 public abstract class Component
 {
@@ -113,11 +128,7 @@ public class ConcreteDecoratorA : Decorator
 ```csharp
 public class ConcreteDecoratorB : Decorator
 {
-    public string AddedState
-    {
-        get;
-        set;
-    }
+    public string AddedState { get; set; }
 
     public ConcreteDecoratorB(Component component) : base(component)
     {
@@ -139,7 +150,7 @@ Component da = new ConcreteDecoratorA(c);
 Component db = new ConcreteDecoratorB(da);
 db.Operation();
 ```
-
+---
 ## Decorator 存取檔案
 令人抓狂的需求變動：本來已經有一個讀寫檔案的功能，現在需求要增加能夠處理Base 64 編碼、加密或壓縮。
 
@@ -166,7 +177,10 @@ public class FileProcess
 }
 ```
 
-<br/>剛開始你只需要單純讀寫檔案
+<br/>
+
+### 原本寫法
+剛開始你只需要單純讀寫檔案
 ```csharp
 private string path = "1.txt";
 private string source = "ABCDEFD 這是一本書";
@@ -204,6 +218,8 @@ private static void Phase3_Process()
     // 於是你就抓狂了.....
 }
 ```
+
+<br/>
 
 ### 用 Decorator 模式改寫
 <br/>IFileProcess 介面
@@ -484,9 +500,10 @@ var result = Encoding.UTF8.GetString(fileDecorator.Read(path));
 Console.WriteLine(result);
 ```
 
-### 將上例加入 Extension Method 
+<br/>
 
-<br/>增加 FileDecoratorHelper 類別
+### 將上例加入 Extension Method
+增加 FileDecoratorHelper 類別
 ```csharp
 public static class FileDecoratorHelper
 {
@@ -512,6 +529,8 @@ fileDecorator.Write(path, Encoding.UTF8.GetBytes(source));
 var result = Encoding.UTF8.GetString(fileDecorator.Read(path));
 Console.WriteLine(result);
 ```
+
+<br/>
 
 ### Decorator with Adapter
 我們再增加情境，假設既有的 FileProcess 類別，是我們無法更動的程式碼

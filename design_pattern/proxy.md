@@ -1,5 +1,15 @@
 # Design Pattern - Proxy
 
+- [Design Pattern - Proxy](#design-pattern---proxy)
+  - [概觀](#概觀)
+  - [類別圖](#類別圖)
+    - [pseudo code](#pseudo-code)
+  - [Proxy 控制檔案存取](#proxy-控制檔案存取)
+  - [Proxy + Adapter](#proxy--adapter)
+  - [Decorator VS Proxy](#decorator-vs-proxy)
+
+---
+## 概觀
 + 為其他物件提供一種代理，藉由這種方式控制對該物件的存取。
 + 依功能區分
   + remote proxy (遠端代理)
@@ -7,6 +17,7 @@
   + protection proxy (設限代理)
   + smart reference (智慧參考)
 
+---
 ## 類別圖
 ```mermaid
 classDiagram
@@ -43,7 +54,10 @@ Subject <|-- Proxy
   + 內部會具有指向 Subject 或 RealSubject 的欄位。
   + 控制對於 RealSubject 的存取行為。
 
-<br/>Subject 類別
+<br/>
+
+### pseudo code
+Subject 類別
 ```csharp
 public abstract class Subject
 {
@@ -97,9 +111,9 @@ public class Proxy : Subject
 Subject sub = new Proxy();
 sub.Request();
 ```
-
+---
 ## Proxy 控制檔案存取
-### 本來已經有一個讀寫檔案的功能，為它增加權限管理的功能。
+本來已經有一個讀寫檔案的功能，為它增加權限管理的功能。
 
 <br/>既有的 FileProcess 類別，假設無法更動程式碼
 ```csharp
@@ -234,10 +248,10 @@ writeProxy.Write(path, Encoding.UTF8.GetBytes(source));
 FileProcessProxy readProxy = new FileProcessProxy(user);
 var actual = Encoding.UTF8.GetString(readProxy.Read(path));
 ```
-
-### 讓前面的 Decorator Sample 和 Proxy Sample 搭配使用。
-
-Decorator 的抽象
+---
+## Proxy + Adapter
+讓前面的 Decorator Sample 和 Proxy Sample 搭配使用。
+<br/>Decorator 的抽象
 ```csharp
 public abstract class FileDecorator : IFileProcess
 {
@@ -490,10 +504,9 @@ Console.WriteLine(result);
 <br/>Sample002，IFileProcess同時是 Adapter，Proxy，Decorator
 <br/>Decorator 和 Proxy 很像，兩邊的東西都要有同樣的介面
 
+---
 ## Decorator VS Proxy
 + 都在解決繼承濫用的問題。
 + 裝飾器模式關注於在一個物件上動態的增加方法，而代理模式關注於控制對於被代理物件的存取。
 + 代理模式是對它的客戶隱藏一個物件的具體信息。
 + 裝飾器模式的目的不在於控制存取，而是擴展功能。
-
-## todo RealProxy 的條件 範例

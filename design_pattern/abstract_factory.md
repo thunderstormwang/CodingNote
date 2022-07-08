@@ -1,9 +1,16 @@
 # Design Pattern - Abstract Factory
 
+- [Design Pattern - Abstract Factory](#design-pattern---abstract-factory)
+  - [概觀](#概觀)
+  - [如下圖，機殼、電池需為同一家，不可能用蘋果的機殼去配三星的電池，所以切換工廠類別，就可整個生產線都切換](#如下圖機殼電池需為同一家不可能用蘋果的機殼去配三星的電池所以切換工廠類別就可整個生產線都切換)
+  - [類別圖](#類別圖)
+    - [pseudo code](#pseudo-code)
+---
+## 概觀
 + 以同一個介面來建立一整族相關或相依的物件，並且不需要指定它們的具體型別。
 + 適用於多產品族，而且這些產品族是整族切換的情境。
 如下圖，機殼、電池需為同一家，不可能用蘋果的機殼去配三星的電池，所以切換工廠類別，就可整個生產線都切換
-
+---
 ## 類別圖
 ```mermaid
 classDiagram
@@ -71,6 +78,9 @@ AbstractProductB <|-- ProductB2
 + Factory
   + 依照AbstractFactory 介面實作的具體工廠類別(圖中的 Factory1 和 Factory2)，具現實際產生具體產品的職責。
 
+<br/>
+
+### pseudo code
 抽象工廠的一般化
 ```csharp
 public abstract class AbstractFactory
@@ -114,8 +124,10 @@ public class SamsungFactory : AbstractFactory
 ```csharp
 public abstract class AbstractChassis
 { }
+
 public class AppleChassis : AbstractChassis
 { }
+
 public class SamsungChassis : AbstractChassis
 { }
 ```
@@ -124,8 +136,10 @@ public class SamsungChassis : AbstractChassis
 ```csharp
 public abstract class AbstractBattery
 { }
+
 public class AppletBattery : AbstractBattery
 { }
+
 public class SamsungBattery : AbstractBattery
 { }
 ```
