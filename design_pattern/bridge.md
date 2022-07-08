@@ -329,3 +329,416 @@ public class WomanComment : IBMIComment
 ## Bridge + Adapter
 + 擴張 Macro Command 範例，除了原有寫入檔案的功能外，現在又要整合 Socket 送資料的功能。
 + 在 Command 的實作中採用 Bridge Pattern。
+
+<br/>todo 加解說
+```csharp
+public class FileProcess
+{
+    public void Write(string path, byte[] data)
+    {
+        File.WriteAllBytes(path, data);
+    }
+    public byte[] Read(string path)
+    {
+        if (File.Exists(path))
+        {
+            return File.ReadAllBytes(path);
+        }
+        else
+        {
+            throw new FileNotFoundException();
+        }
+    }
+}
+```
+
+<br/>todo 加解說
+```csharp
+public class Base64Processor
+{
+    public byte[] Decode(byte[] base64Bytes)
+    {
+        var bytes = Convert.FromBase64String(Encoding.UTF8.GetString(base64Bytes));
+        return bytes;
+    }
+    public byte[] Encode(byte[] data)
+    {
+        return Encoding.UTF8.GetBytes(Convert.ToBase64String(data));
+    }
+}
+public class DESCryptoProcessor
+{
+    private byte[] key;
+    private byte[] iv;
+    private DESCryptoServiceProvider des;
+    public DESCryptoProcessor()
+    {
+        key = new byte[] { 0x01, 0xFF, 0x02, 0xAA, 0x55, 0xBB, 0x19, 0x20 };
+        iv = new byte[] { 0x11, 0xF3, 0x43, 0x0A, 0x35, 0xE9, 0x82, 0x80 };
+        des = new DESCryptoServiceProvider();
+        des.Key = key;
+        des.IV = iv;
+    }
+    public byte[] DecryptData(byte[] encryptBytes)
+    {
+        byte[] outputBytes = null;
+        using (MemoryStream memoryStream = new MemoryStream(encryptBytes))
+        {
+            using (CryptoStream decryptStream = new CryptoStream(memoryStream, des.CreateDecryptor(), CryptoStreamMode.Read))
+            {
+                MemoryStream outputStream = new MemoryStream();
+                decryptStream.CopyTo(outputStream);
+                outputBytes = outputStream.ToArray();
+            }
+        }
+        return outputBytes;
+    }
+    public byte[] EncryptData(byte[] data)
+    {
+        byte[] outputBytes = null;
+        using (MemoryStream memoryStream = new MemoryStream())
+        {
+            using (CryptoStream encryptStream = new CryptoStream(memoryStream, des.CreateEncryptor(), CryptoStreamMode.Write))
+            {
+                MemoryStream inputStream = new MemoryStream(data);
+                inputStream.CopyTo(encryptStream);
+                encryptStream.FlushFinalBlock();
+                outputBytes = memoryStream.ToArray();
+            }
+        }
+        return outputBytes;
+    }
+}
+public class AESCryptoProcessor
+{
+    private byte[] key;
+    private byte[] iv;
+    private AesCryptoServiceProvider aes;
+    public AESCryptoProcessor()
+    {
+        key = new byte[] { 0x01, 0xFF, 0x02, 0xAA, 0x55, 0xBB, 0x19, 0x20, 0x01, 0xFF, 0x02, 0xAA, 0x55, 0xBB, 0x19, 0x20 };
+        iv = new byte[] { 0x11, 0xF3, 0x43, 0x0A, 0x35, 0xE9, 0x82, 0x80, 0x11, 0xF3, 0x43, 0x0A, 0x35, 0xE9, 0x82, 0x80 };
+        aes = new AesCryptoServiceProvider();
+        aes.Key = key;
+        aes.IV = iv;
+    }
+    public byte[] DecryptData(byte[] encryptBytes)
+    {
+        byte[] outputBytes = null;
+        using (MemoryStream memoryStream = new MemoryStream(encryptBytes))
+        {
+            using (CryptoStream decryptStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read))
+            {
+                MemoryStream outputStream = new MemoryStream();
+                decryptStream.CopyTo(outputStream);
+                outputBytes = outputStream.ToArray();
+            }
+        }
+        return outputBytes;
+    }
+    public byte[] EncryptData(byte[] data)
+    {
+        byte[] outputBytes = null;
+        using (MemoryStream memoryStream = new MemoryStream())
+        {
+            using (CryptoStream encryptStream = new CryptoStream(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write))
+            {
+                MemoryStream inputStream = new MemoryStream(data);
+                inputStream.CopyTo(encryptStream);
+                encryptStream.FlushFinalBlock();
+                outputBytes = memoryStream.ToArray();
+            }
+        }
+        return outputBytes;
+    }
+}
+public class GZipFileProcessor
+{
+    public byte[] Decompress(byte[] compressedBytes)
+    {
+        byte[] outputBytes = null;
+        MemoryStream input = new MemoryStream(compressedBytes);
+        outputBytes = Decompress(input).ToArray();
+        return outputBytes;
+    }
+    private MemoryStream Decompress(Stream compressed)
+    {
+        var decompressed = new MemoryStream();
+        using (var zip = new GZipStream(compressed, CompressionMode.Decompress, true))
+        {
+            zip.CopyTo(decompressed);
+        }
+        decompressed.Seek(0, SeekOrigin.Begin);
+        return decompressed;
+    }
+    public byte[] Compress(byte[] data)
+    {
+        byte[] outputBytes = null;
+        MemoryStream input = new MemoryStream(data);
+        outputBytes = Compress(input).ToArray();
+        return outputBytes;
+    }
+    private MemoryStream Compress(Stream decompressed)
+    {
+        var compressed = new MemoryStream();
+        using (var zip = new GZipStream(compressed, CompressionLevel.Fastest, true))
+        {
+            decompressed.CopyTo(zip);
+        }
+        compressed.Seek(0, SeekOrigin.Begin);
+        return compressed;
+    }
+}
+```
+
+<br/>todo 加解說
+```csharp
+/// <summary>
+/// Tcp Adapter
+/// </summary>
+public class TcpCommunication :  IDisposable
+{
+    private Socket client;
+    public TcpCommunication()
+    {
+        client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        //...設定 client 所需的資訊
+    }
+    public bool Connect(string target)
+    {
+        string[] data = target.Split(':');
+        IPAddress ip;
+        int port;
+        if (IPAddress.TryParse(data[0], out ip) && int.TryParse(data[1], out port))
+        {
+            client.Connect(ip, port);
+        }
+        return client.Connected;
+    }
+    public void Disconnect()
+    {
+        if (client.Connected)
+        {
+            client.Disconnect(true);
+        }
+    }
+    public void Dispose()
+    {
+        if (client != null)
+        {
+            client.Dispose();
+        }
+    }
+    public byte[] Receive()
+    {
+        if (client.Connected)
+        {
+            byte[] buffer = new byte[1024];
+            int receiveSize = client.Receive(buffer);
+            Array.Resize(ref buffer, receiveSize);
+            return buffer;
+        }
+        else
+        {
+            return null;
+        }
+    }
+    public void Send(byte[] buffer)
+    {
+        if (client.Connected)
+        {
+            client.Send(buffer);
+        }
+    }
+}
+```
+
+<br/>IBytesProcessAdapter 介面，為 FileProcess 和 TcpCommunication 建立 Adapter，才能讓 Bridge 可以使用共用抽象
+同時擔任 Adapter 的抽象 和 Bridge 的 Implementor 的抽象
+```csharp
+public interface IBytesProcessAdapter
+{
+    void Write(string path, byte[] data);
+    byte[] Read(string path);
+    void Close();
+}
+```
+
+<br/> FileProcessAdapter 實作
+```csharp
+public class FileProcessAdapter : IBytesProcessAdapter
+{
+    private FileProcess _target = new FileProcess();
+
+    public void Close()
+    { }
+
+    public byte[] Read(string path)
+    {
+        return _target.Read(path);
+    }
+
+    public void Write(string path, byte[] data)
+    {
+        _target.Write(path, data);
+    }
+}
+```
+
+<br/> TcpProcessAdapter 實作
+```csharp
+public class TcpProcessAdapter : IBytesProcessAdapter
+{
+    private TcpCommunication _target = new TcpCommunication();
+    private bool _connected = false;
+
+    public byte[] Read(string path)
+    {
+        if (!_connected)
+        {
+            _target.Connect(path);
+            _connected = true;
+        }
+        return _target.Receive();
+    }
+
+    public void Write(string path, byte[] data)
+    {
+        if (!_connected)
+        {
+            _target.Connect(path);
+            _connected = true;
+        }
+        _target.Send(data);
+    }
+
+    public void Close()
+    {
+        _target.Disconnect();
+    }
+}
+```
+
+<br/>BytesCommand 介面
+```csharp
+public abstract class BytesCommand
+{
+    protected IBytesProcessAdapter _implementor;
+    protected BytesCommand(IBytesProcessAdapter adapter)
+    {
+        _implementor = adapter;
+    }
+}
+```
+
+<br/>同時擔任 Command 的抽象 和 Bridge 的 Abstraction
+```csharp
+public abstract class BytesWriteCommand : BytesCommand
+{
+    protected BytesWriteCommand(IBytesProcessAdapter adapter) : base(adapter)
+    { }
+
+    public abstract void Execute(string path, byte[] data);
+}
+```
+
+<br/>Command 實作
+```csharp
+public abstract class BytesReadCommand : BytesCommand
+{
+    public BytesReadCommand(IBytesProcessAdapter adapter) : base(adapter)
+    { }
+
+    public abstract byte[] Execute(string path);
+}
+
+public class Base64AesWriteCommand : BytesWriteCommand
+{
+    private Base64Processor _base64Processor;
+    private AESCryptoProcessor _aesProcessor;
+
+    public Base64AesWriteCommand(IBytesProcessAdapter adapter) : base(adapter)
+    {
+        _aesProcessor = new AESCryptoProcessor();
+        _base64Processor = new Base64Processor();
+    }
+
+    public override void Execute(string path, byte[] data)
+    {
+        _implementor.Write(path, _aesProcessor.EncryptData(_base64Processor.Encode(data)));
+    }
+}
+
+public class Base64AesReadCommand : BytesReadCommand
+{
+    private Base64Processor _base64Processor;
+    private AESCryptoProcessor _aesProcessor;
+
+    public Base64AesReadCommand(IBytesProcessAdapter adapter) : base(adapter)
+    {
+        _aesProcessor = new AESCryptoProcessor();
+        _base64Processor = new Base64Processor();
+    }
+
+    public override byte[] Execute(string path)
+    {
+        return _base64Processor.Decode(_aesProcessor.DecryptData(_implementor.Read(path)));
+    }
+}
+```
+
+<br/>Invoker 類別
+```csharp
+public class Invoker
+{
+    internal BytesWriteCommand WriteCommand { get; set; }
+    internal BytesReadCommand ReadCommand { get; set; }
+
+    public void Write(string path, byte[] data)
+    {
+        WriteCommand.Execute(path, data);
+    }
+
+    public byte[] Read(string path)
+    {
+        return ReadCommand.Execute(path);
+    }
+}
+```
+
+<br/>Base64AesClient 類別
+```csharp
+public class Base64AesClient
+{
+    public static Invoker CreateFileInvoker()
+    {
+        var invoker = new Invoker();
+        IBytesProcessAdapter adapter = new FileProcessAdapter();
+        invoker.WriteCommand = new Base64AesWriteCommand(adapter);
+        invoker.ReadCommand = new Base64AesReadCommand(adapter);
+        return invoker;
+    }
+
+    public static Invoker CreateTcpInvoker()
+    {
+        var invoker = new Invoker();
+        IBytesProcessAdapter adapter = new TcpProcessAdapter();
+        invoker.WriteCommand = new Base64AesWriteCommand(adapter);
+        invoker.ReadCommand = new Base64AesReadCommand(adapter);
+        return invoker;
+    }
+}
+```
+
+<br/>Client 端程式
+```csharp
+string newline = Environment.NewLine;
+string path = "127.0.0.1:7";
+string expected = "測試 文字" + newline + "Base64" + newline + "檔案存取";
+var writebytes = Encoding.UTF8.GetBytes(expected);
+var invoker = Base64AesClient.CreateTcpInvoker();
+invoker.Write(path, writebytes);
+
+string actual = Encoding.UTF8.GetString(invoker.Read(path));
+Console.WriteLine(actual);
+```

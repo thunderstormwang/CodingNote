@@ -490,7 +490,7 @@ Console.WriteLine(result);
 <br/>Sample002，IFileProcess同時是 Adapter，Proxy，Decorator
 <br/>Decorator 和 Proxy 很像，兩邊的東西都要有同樣的介面
 
-<br/>Decorator VS Proxy
+## Decorator VS Proxy
 + 都在解決繼承濫用的問題。
 + 裝飾器模式關注於在一個物件上動態的增加方法，而代理模式關注於控制對於被代理物件的存取。
 + 代理模式是對它的客戶隱藏一個物件的具體信息。
