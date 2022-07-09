@@ -227,6 +227,8 @@ ICommunication commucation = (new TcpFactory()).GetInstance();
 commucation.Connect("192.168.1.1:5555");
 ```
 
+<br/>
+
 ### 第二種寫法，搭配 Template Method
 
 <br/>改寫前例的工廠類別，搭配 Template Method 建立產品類別

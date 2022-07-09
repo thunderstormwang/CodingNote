@@ -2,17 +2,18 @@
 
 - [Design Pattern - Template](#design-pattern---template)
   - [概觀](#概觀)
-  - [+ 把通用實做放在基底類別](#-把通用實做放在基底類別)
   - [類別圖](#類別圖)
-      - [pseudo code](#pseudo-code)
+    - [pseudo code](#pseudo-code)
   - [委派與範本模式](#委派與範本模式)
     - [使用委派模擬 Enumerable.Where](#使用委派模擬-enumerablewhere)
     - [使用 Template 委派模擬 Enumerable.Where](#使用-template-委派模擬-enumerablewhere)
+
 ---
 ## 概觀
 + 在一個操作中定義一個演算法框架，而將依些步驟(實作細節)遞延到子類別，使得子類別不需要改變演算法的步驟即可重新定義該演算法的某些特定步驟。
 + 減少多餘的程式碼
 + 把通用實做放在基底類別
+
 ---
 ## 類別圖
 ```mermaid
@@ -51,7 +52,7 @@ AbstractClass <|-- ConcreteClass2
 
 <br/>
 
-#### pseudo code
+### pseudo code
 如下圖，父類別只規定 PremitiveOperation1 必須先做完，才能去做 PremitiveOperation2，但是不定義這兩個函式的實作，由子類別去定義。
 ```csharp
 public abstract class AbstractClass

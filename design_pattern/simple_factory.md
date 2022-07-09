@@ -11,8 +11,8 @@
 + 利用分支運算( if else, switch case)決定實體
 + 如果要增加類別，就必須修改程式碼( if else, switch case)，這個動作有些人認為違反開閉原則
 + 改善分支運算的問題
-  + 使用資源字典
   + 使用 Attribute
+  + 使用資源字典
 
 <br/>
 

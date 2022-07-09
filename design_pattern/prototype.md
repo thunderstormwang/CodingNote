@@ -2,24 +2,25 @@
 
 - [Design Pattern - Prototype](#design-pattern---prototype)
   - [概觀](#概觀)
-  - [+ 可與其他的創建模式結合。](#-可與其他的創建模式結合)
   - [類別圖](#類別圖)
-  - [+ 透過呼叫Clone method，產生新的執行個體。](#-透過呼叫clone-method產生新的執行個體)
   - [自己實作 IPrototype 介面](#自己實作-iprototype-介面)
   - [善用 .Net Framework](#善用-net-framework)
     - [.Net 提供的 ICloneable 介面](#net-提供的-icloneable-介面)
-  - [複製的作法有分淺層複製(Shallow Copy)和深層複製(Deep Copy)](#複製的作法有分淺層複製shallow-copy和深層複製deep-copy)
-    - [每個物件皆實作 ICloneable](#每個物件皆實作-icloneable)
-    - [JsonConver 序列化](#jsonconver-序列化)
-    - [BinaryFormatter 序列化](#binaryformatter-序列化)
-    - [Prototype Manager](#prototype-manager)
-    - [Abstract Factory + Prototype Manager](#abstract-factory--prototype-manager)
-      - [類別圖](#類別圖-1)
+    - [Object.MemberwiseClone Method](#objectmemberwiseclone-method)
+      - [每個物件皆實作 ICloneable](#每個物件皆實作-icloneable)
+      - [JsonConver 序列化](#jsonconver-序列化)
+      - [BinaryFormatter 序列化](#binaryformatter-序列化)
+  - [Prototype Manager](#prototype-manager)
+  - [Abstract Factory + Prototype Manager](#abstract-factory--prototype-manager)
+    - [類別圖](#類別圖-1)
+    - [pseudo code](#pseudo-code)
+
 ---
 ## 概觀
 + 使用原型執行個體指定創建的物件型別，並且透過複製來創建這些物件。
 + 提升複雜物件的創建。
 + 可與其他的創建模式結合。
+
 ---
 ## 類別圖
 ```mermaid
@@ -46,6 +47,7 @@ IPrototype <|-- MyRectangle
   + 具體實作自我複製的操作介面(範例中的 MyRectangle)，藉以複製執行個體。
 + Client
   + 透過呼叫Clone method，產生新的執行個體。
+
 ---
 ## 自己實作 IPrototype 介面
 自定義 IPrototype 介面
@@ -123,9 +125,12 @@ o1.Width = 8;
 
 var o2 = (MyRectangle)o1.Clone();
 ```
----
-## 複製的作法有分淺層複製(Shallow Copy)和深層複製(Deep Copy)
-Shallow Copy 只會複製 Value Type 的 Property，如果該 Property 是 Reference Type，將不會被複製，只會複製參考，也就是被複製出來的物件的 Reference Type 的 Property 跟原物件的相同 Reference Type 的 Property 會指向同一個參考。
+
+<br/>
+
+### Object.MemberwiseClone Method 
+複製的作法有分淺層複製(Shallow Copy)和深層複製(Deep Copy)。
+<br/>Shallow Copy 只會複製 Value Type 的 Property，如果該 Property 是 Reference Type，將不會被複製，只會複製參考，也就是被複製出來的物件的 Reference Type 的 Property 跟原物件的相同 Reference Type 的 Property 會指向同一個參考。
 <br/>Shallow Copy 可以用 C# 提供的函式的 MemberwiseClone 去達成，
 <br/>Deep Copy 則是連所有的 Reference Type 的 Property 也會被複製一份，可以用以下做法：
 + 每個物件皆實作 ICloneable
@@ -134,7 +139,7 @@ Shallow Copy 只會複製 Value Type 的 Property，如果該 Property 是 Refer
 
 <br/>
 
-### 每個物件皆實作 ICloneable
+#### 每個物件皆實作 ICloneable
 Class1 類別，須實作 ICloneable
 ```csharp
 public class MyClass1 : ICloneable
@@ -188,7 +193,7 @@ Console.WriteLine("ReferenceEquals(o1.Data, o2.Data) = " + object.ReferenceEqual
 
 <br/>
 
-### JsonConver 序列化
+#### JsonConver 序列化
 
 <br/>要被複製的類別
 ```csharp
@@ -228,13 +233,12 @@ Console.WriteLine("ReferenceEquals(o1.Data, o2.Data) = " + object.ReferenceEqual
 
 <br/>
 
-### BinaryFormatter 序列化
+#### BinaryFormatter 序列化
 
 todo ...
 
-<br/>
-
-### Prototype Manager
+---
+## Prototype Manager
 產品A 類別
 ```csharp
 public abstract class AbstractProductA : ICloneable
@@ -334,11 +338,9 @@ var o = ProductsContext.Manager.GetPrototype("ProductA1");
 Console.WriteLine(o.GetType().Name);
 ```
 
-<br/>
-
-### Abstract Factory + Prototype Manager
-
-#### 類別圖
+---
+## Abstract Factory + Prototype Manager
+### 類別圖
 ```mermaid
 classDiagram
 class PrototypeManager {
@@ -373,7 +375,8 @@ AbstractFactory <|-- Factory1
 AbstractFactory <|-- Factory2
 ```
 
-<br/>工廠抽象類別
+### pseudo code
+工廠抽象類別
 ```csharp
 public abstract class AbstractFactory
 {

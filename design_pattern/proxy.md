@@ -6,6 +6,7 @@
     - [pseudo code](#pseudo-code)
   - [Proxy 控制檔案存取](#proxy-控制檔案存取)
   - [Proxy + Adapter](#proxy--adapter)
+  - [使用 RealProxy 建立透明代理](#使用-realproxy-建立透明代理)
   - [Decorator VS Proxy](#decorator-vs-proxy)
 
 ---
@@ -501,11 +502,127 @@ Console.WriteLine(result);
 
 <br/>此例為靜態代理，已寫死要代理什麼物件
 <br/>也可設計成動態代理，可動態代理物件，但被代理物件彼此要有繼承關係
-<br/>Sample002，IFileProcess同時是 Adapter，Proxy，Decorator
-<br/>Decorator 和 Proxy 很像，兩邊的東西都要有同樣的介面
+
+---
+## 使用 RealProxy 建立透明代理
+能夠使用 RealProxy 的條件
++ 繼承自 MarshalByRefObject class
++ Interface Type
+
+<br/>IFileAccess 介面
+```csharp
+public interface IFileAccess
+{
+    void Create();
+    void Delete();
+    void Write();
+    void Read();
+}
+```
+
+<br/>FileAccess 類別
+```csharp
+public class FileAccess : IFileAccess
+{
+    private string _file;
+
+    public FileAccess(string filename)
+    {
+        _file = filename;
+    }
+
+    public void Create()
+    {
+        Console.WriteLine(string.Format("Create a file : {0}", _file));
+    }
+
+    public void Delete()
+    {
+        Console.WriteLine(string.Format("Delete a file :{0}", _file));
+    }
+
+    public void Read()
+    {
+        Console.WriteLine(string.Format("Read from a file :{0}", _file));
+    }
+
+    public void Write()
+    {
+        Console.WriteLine(string.Format("Write to a file :{0}", _file));
+    }        
+}
+```
+
+<br/>LogProxy 類別
+```csharp
+public class LogProxy<T> : RealProxy where T : class
+{
+    private T _instance;
+
+    public LogProxy(T instance) : base(typeof(T))
+    {
+        _instance = instance;
+    }
+
+    public override IMessage Invoke(IMessage msg)
+    {
+        var methodCall = msg as IMethodCallMessage;
+        var methodInfo = methodCall.MethodBase as MethodInfo;
+        
+        BeforeLog();
+        var result = methodInfo.Invoke(_instance, methodCall.InArgs);
+        AfterLog();
+        
+        return new ReturnMessage(result, null, 0, methodCall.LogicalCallContext, methodCall);
+    }
+    
+    private void BeforeLog()
+    {
+        Console.WriteLine("BeforeLog something......");
+    }
+    
+    private void AfterLog()
+    {
+        Console.WriteLine("AfterLog something......");
+    }
+}
+```
+
+<br/>LogProxyFactory 類別
+```csharp
+public class LogProxyFactory<T> where T : class
+{
+    LogProxy<T> _proxy;
+
+    public LogProxyFactory(Type realType, object[] args)
+    {
+        T instance = (T)Activator.CreateInstance(realType, args);
+        _proxy = new LogProxy<T>(instance);
+    }
+
+    public T GetInstance()
+    {
+        var remoteObj = _proxy.GetTransparentProxy();
+        return (T)remoteObj;
+    }
+}   
+```
+
+<br/>Client 端程式
+```csharp
+string filename = "your.txt";
+
+IFileAccess file = new LogProxyFactory<IFileAccess>(typeof(FileAccess), new object[] { filename }).GetInstance();
+file.Delete();
+```
+>BeforeLog something......
+<br/>Delete a file :your.txt
+<br/>AfterLog something......
+
 
 ---
 ## Decorator VS Proxy
++ Decorator 和 Proxy 很像，兩邊的東西都要有同樣的介面
 + 都在解決繼承濫用的問題。
 + 裝飾器模式關注於在一個物件上動態的增加方法，而代理模式關注於控制對於被代理物件的存取。
 + 代理模式是對它的客戶隱藏一個物件的具體信息。

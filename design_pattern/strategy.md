@@ -8,6 +8,7 @@
   - [使用委派簡化 Strategy 物件](#使用委派簡化-strategy-物件)
     - [類別圖](#類別圖-1)
   - [Chain Of Responsibility vs State vs Strategy](#chain-of-responsibility-vs-state-vs-strategy)
+
 ---
 ## 概觀
 + 定義一組演算法，將每個演算法都封裝起來，並且使它們可以互換，在不影響外界的情況下個別抽換所使用的演算法。
@@ -68,6 +69,7 @@ public abstract class AbstractStrategy
     public abstract void AlgorithmMethod();
 }
 ```
+
 <br/>Strategy1 類別，，實作演算法內容
 ```csharp
 public class Strategy1 : AbstractStrategy
@@ -78,6 +80,7 @@ public class Strategy1 : AbstractStrategy
     }
 }
 ```
+
 <br/>Strategy2 類別，，實作演算法內容
 ```csharp
 public class Strategy2 : AbstractStrategy

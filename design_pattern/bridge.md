@@ -130,6 +130,7 @@ Abstraction ab = new RefinedAbstraction(new ImplementorA());
 ab.Operation();
 ```
 
+---
 ## 範例 - BMI 重構
 + 利用 Bridge Pattern 重構，讓繼承轉為聚合
 
@@ -236,7 +237,7 @@ public class Woman : Human
 ```
 
 
-<br/>就如同[多用組合，少用繼承](composition_inheritance.md)所解釋的，這會讓基底類別很肥大。
+<br/>就如同[多用組合，少用繼承](composition_inheritance.md)所解釋的，一直用繼承的方法會讓基底類別越變很肥。
 
 <br/>
 
@@ -358,16 +359,16 @@ public class WomanComment : IBMIComment
 + 擴張 Macro Command 範例，除了原有寫入檔案的功能外，現在又要整合 Socket 送資料的功能。
 + 在 Command 的實作中採用 Bridge Pattern。
 
-<br/>FileProcess 類別，既有類別
+<br/>FileProcess 類別，既有類別，無法更改
 ```csharp
 public class FileProcess
 {
-    public void Write(string path, byte[] data)
+    public void AnotherWrite(string path, byte[] data)
     {
         File.WriteAllBytes(path, data);
     }
 
-    public byte[] Read(string path)
+    public byte[] AnotherRead(string path)
     {
         if (File.Exists(path))
         {
@@ -381,7 +382,7 @@ public class FileProcess
 }
 ```
 
-<br/>Base64Processor 類別，既有類別
+<br/>Base64Processor 類別，既有類別，無法更改
 ```csharp
 public class Base64Processor
 {
@@ -398,7 +399,7 @@ public class Base64Processor
 }
 ```
 
-<br/>DESCryptoProcessor 類別，既有類別
+<br/>DESCryptoProcessor 類別，既有類別，無法更改
 ```csharp
 public class DESCryptoProcessor
 {
@@ -445,7 +446,7 @@ public class DESCryptoProcessor
 }
 ```
 
-<br/>AESCryptoProcessor 類別，既有類別
+<br/>AESCryptoProcessor 類別，既有類別，無法更改
 ```csharp
 public class AESCryptoProcessor
 {
@@ -492,7 +493,7 @@ public class AESCryptoProcessor
 }
 ```
 
-<br/>GZipFileProcessor 類別，既有類別
+<br/>GZipFileProcessor 類別，既有類別，無法更改
 ```csharp
 public class GZipFileProcessor
 {
@@ -623,12 +624,12 @@ public class FileProcessAdapter : IBytesProcessAdapter
 
     public byte[] Read(string path)
     {
-        return _target.Read(path);
+        return _target.AnotherRead(path);
     }
 
     public void Write(string path, byte[] data)
     {
-        _target.Write(path, data);
+        _target.AnotherWrite(path, data);
     }
 }
 ```

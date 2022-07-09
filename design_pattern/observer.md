@@ -366,7 +366,3 @@ s.Notify += new ConcreteObserver() { Name = "C" }.Update;
 
 s.SubjectState = "All I have to do is dream.";
 ```
-
-<br/>講師舉了其它例子
-+ 在 C#要注意 memory leak，若 form2 是去訂閱 form1 的事件，在 form2 關閉時，需作 -= 委派或事件，不然記憶體不會被釋放
-+ 實作自己的 Data Binding 的自動通知：實作 INotifyPropertyChanged

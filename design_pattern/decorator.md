@@ -8,6 +8,7 @@
     - [原本寫法](#原本寫法)
     - [用 Decorator 模式改寫](#用-decorator-模式改寫)
     - [將上例加入 Extension Method](#將上例加入-extension-method)
+    - [再將上例加入 Factory](#再將上例加入-factory)
     - [Decorator with Adapter](#decorator-with-adapter)
 ---
 ## 概觀
@@ -222,7 +223,7 @@ private static void Phase3_Process()
 <br/>
 
 ### 用 Decorator 模式改寫
-<br/>IFileProcess 介面
+IFileProcess 介面
 ```csharp
 public interface IFileProcess
 {
@@ -530,6 +531,76 @@ var result = Encoding.UTF8.GetString(fileDecorator.Read(path));
 Console.WriteLine(result);
 ```
 
+
+<br/>
+
+### 再將上例加入 Factory
+
+增加 FileDecoratorHelper 類別
+```csharp
+public class DecoratorFactory
+{
+    public IFileProcess Component { get; private set; }
+    public List<Decorators> DecoratorsSequence { get; set; }
+
+    public DecoratorFactory(IFileProcess component)
+    {
+        Component = component;
+    }
+
+    public IFileProcess GetInstance()
+    {
+        IFileProcess result = Component;
+        if (DecoratorsSequence != null)
+        {
+            foreach (var decorator in DecoratorsSequence)
+            {
+                switch (decorator)
+                {
+                    case Decorators.Base64:
+                        result = result.Decorate<Base64FileDecorator>();
+                        break;
+                    case Decorators.AES:
+                        result = result.Decorate<AESCryptoFileDecorator>();
+                        break;
+                    case Decorators.DES:
+                        result = result.Decorate<DESCryptoFileDecorator>();
+                        break;
+                    case Decorators.GZip:
+                        result = result.Decorate<GZipFileDecorator>();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        return result;
+    }
+}
+```
+
+<br/>那麼 Client 端程式可以改寫，包裝順序依然是：base64 編碼、壓縮、AES 加密，但較美觀
+<br/>寫入的方式：先做 AES 加密，再做壓縮，再做 base64 編碼，最後寫入檔案
+<br/>讀取的方式：先讀取檔案，再做 base64 解碼，再做解壓縮，最後是 AES 解密
+```csharp
+private string path = "1.txt";
+private string source = "ABCDEFD 這是一本書";
+
+var decoraFactory = new DecoratorFactory(new FileProcess());
+decoraFactory.DecoratorsSequence = new List<Decorators>()
+{
+    Decorators.Base64,
+    Decorators.GZip,
+    Decorators.AES    
+};
+var fileDecorator = decoraFactory.GetInstance();
+
+fileDecorator.Write(path, Encoding.UTF8.GetBytes(source));
+
+var result = Encoding.UTF8.GetString(fileDecorator.Read(path));
+Console.WriteLine(result);
+```
+
 <br/>
 
 ### Decorator with Adapter
@@ -555,11 +626,13 @@ public class FileProcess
     }
 }
 ```
+
 <br/>
 
 1. 先為既有的 FileProcess 建立一個 Adapter。
 2. 接著再以 Adapter 介面建立 Decorator
-<br/>Adapter 的公開介面，同時也是 Decorator 抽象類別要實作的介面
+
+Adapter 的公開介面，同時也是 Decorator 抽象類別要實作的介面
 ```csharp
 public interface IFileProcess
 {

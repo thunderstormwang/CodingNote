@@ -1,18 +1,17 @@
 # Design Pattern - Facade
 
 - [Design Pattern - Facade](#design-pattern---facade)
-  - [- 實際例子 - NewtonSoft.Json](#--實際例子---newtonsoftjson)
   - [概觀](#概觀)
-  - [+ 降低複雜的呼叫操作](#-降低複雜的呼叫操作)
   - [類別圖](#類別圖)
-  - [+ 通常是具體類別，特殊情況下也有可能使用介面(interface)或抽象類別(abstract class)形式。](#-通常是具體類別特殊情況下也有可能使用介面interface或抽象類別abstract-class形式)
   - [實際例子 - NewtonSoft.Json](#實際例子---newtonsoftjson)
+
 ---
 ## 概觀
 + 為子系統的一堆介面定義一個統一的高層介面，讓子系統更加容易使用
 + 降低呼叫端與複雜子系統的依賴
 + 讓 Client 端更容易使用一個複雜的子系統
 + 降低複雜的呼叫操作
+
 ---
 ## 類別圖
 ```mermaid
@@ -40,6 +39,7 @@ Facade ..> 子系統
   + 知道子系統的公開介面
   + 作為 Client 端程式碼與子系統的溝通橋樑
   + 通常是具體類別，特殊情況下也有可能使用介面(interface)或抽象類別(abstract class)形式。
+
 ---
 ## 實際例子 - NewtonSoft.Json
 即使你參數數量都沒變，也可以用 facade 模式再包一層，有幾個好處

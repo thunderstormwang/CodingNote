@@ -5,7 +5,7 @@
   - [用一個類別去實作兩個介面](#用一個類別去實作兩個介面)
   - [用兩個類別去分別實作兩個介面](#用兩個類別去分別實作兩個介面)
   - [yield return](#yield-return)
-  - [For 和 foreach 是不一樣的](#for-和-foreach-是不一樣的)
+  - [For 和 foreach 的不同](#for-和-foreach-的不同)
 
 ---
 ## 概觀
@@ -185,6 +185,6 @@ foreach (double item in myIterator)
 }
 ```
 ---
-## For 和 foreach 是不一樣的
+## For 和 foreach 的不同
 + for 看 index
 + Foreach 則是回傳後，下次再進來，則從下一個地方開始，意即記住上次執行的地方(語法：yield return)

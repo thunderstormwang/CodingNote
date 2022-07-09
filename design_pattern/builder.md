@@ -85,7 +85,7 @@ public abstract class Builder
 }
 ```
 
-<br/>ConcreteBuilder1
+<br/>ConcreteBuilder1 類別
 ```csharp
 public class ConcreteBuilder1 : Builder
 {
@@ -118,7 +118,7 @@ public class ConcreteBuilder1 : Builder
 }
 ```
 
-<br/>ConcreteBuilder2
+<br/>ConcreteBuilder2 類別
 ```csharp
 public class ConcreteBuilder2 : Builder
 {

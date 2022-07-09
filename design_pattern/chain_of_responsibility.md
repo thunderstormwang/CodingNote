@@ -2,7 +2,6 @@
 
 - [Design Pattern - Chain of Responsibility](#design-pattern---chain-of-responsibility)
   - [概觀](#概觀)
-  - [+ Chain Of Responsibility 和 Strategy 很像，如果你知道該由哪個物件去處理請求，可直接設計成 Strategy，直接將請求丟給該件件；如果你不知道該由哪個物去處理請求，用 Chain Of Responsibility，讓請求在物件間傳遞，讓物件自己決定是否處理此請求或要不要繼續傳遞請求](#-chain-of-responsibility-和-strategy-很像如果你知道該由哪個物件去處理請求可直接設計成-strategy直接將請求丟給該件件如果你不知道該由哪個物去處理請求用-chain-of-responsibility讓請求在物件間傳遞讓物件自己決定是否處理此請求或要不要繼續傳遞請求)
   - [類別圖](#類別圖)
     - [pseudo code](#pseudo-code)
   - [Chain of Responsibility 資料驗證](#chain-of-responsibility-資料驗證)
@@ -14,6 +13,7 @@
 + 讓多個物件都有機會處理請求，從而避免請求發送者和接受者之間的耦合關係。將這些物件串成一條鏈，並沿著這條鏈處理和傳遞請求，直到有物件決定不再傳遞下去為止。
 + 鏈太長的時候，容易有效能問題；偵錯上也比較複雜，但是比起巢狀判斷式還是容易多了。
 + Chain Of Responsibility 和 Strategy 很像，如果你知道該由哪個物件去處理請求，可直接設計成 Strategy，直接將請求丟給該件件；如果你不知道該由哪個物去處理請求，用 Chain Of Responsibility，讓請求在物件間傳遞，讓物件自己決定是否處理此請求或要不要繼續傳遞請求
+
 ---
 ## 類別圖
 ```mermaid

@@ -1,17 +1,17 @@
 # Design Pattern - Singleton
 
 - [Design Pattern - Singleton](#design-pattern---singleton)
-  - [- Registry of Singletons](#--registry-of-singletons)
   - [概觀](#概觀)
-  - [+ Double-locking](#-double-locking)
   - [類別圖](#類別圖)
     - [pseudo code](#pseudo-code)
   - [Registry of Singletons](#registry-of-singletons)
+
 ---
 ## 概觀
 + 確保類別只有一個物件實體存在，並且提供單一存取窗口。
 + 讓類別自己負責管理這唯一的物件實體。
 + Double-locking
+
 ---
 ## 類別圖
 ```mermaid

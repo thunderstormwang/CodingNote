@@ -8,7 +8,7 @@
   - [Class Adapter](#class-adapter)
     - [類別圖](#類別圖-1)
     - [pseudocode](#pseudocode)
-  - [範例 - Tcp 和 Serial Port 的 adapter](#範例---tcp-和-serial-port-的-adapter)
+  - [範例 - Tcp 和 Serial Port 的 Adapter](#範例---tcp-和-serial-port-的-adapter)
     - [Object Adapter](#object-adapter-1)
     - [Class Adapter](#class-adapter-1)
 ---
@@ -180,15 +180,14 @@ ITarget target = new Adapter();
 target.Execute();
 ```
 ---
-## 範例 - Tcp 和 Serial Port 的 adapter
+## 範例 - Tcp 和 Serial Port 的 Adapter
 + 客戶需要一個通訊程式，需要同時支援 Tcp 與Serial Port 通訊。
 + 創建一個介面讓客戶端程式能夠不直接切換 .Net Framework 中的 Socket class 與 Serialport class。並且在新增通訊需求時，能夠讓客戶端程式的變動最小化。
 
 <br/>
 
 ### Object Adapter
-
-<br/>ICommunication 介面，這就是一個 Target (Adapter 的抽象)
+ICommunication 介面，這就是一個 Target (Adapter 的抽象)
 ```csharp
 public interface ICommunication
 {
