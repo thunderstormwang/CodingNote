@@ -73,9 +73,9 @@ AbstractProductB <|-- ProductB2
   + 通常為介面(interface)或是抽象類別(abstract class)
   + 抽象工廠的應用場景通常會有兩個以上的 AbstractProduct
 + Product
-  + 依照AbstractProduct 介面實作的具體產品類別(圖中的 ProductA1、ProductB1 與 ProductA2、ProductB2 )。
+  + 依照 AbstractProduct 介面實作的具體產品類別(圖中的 ProductA1、ProductB1 與 ProductA2、ProductB2)。
 + Factory
-  + 依照AbstractFactory 介面實作的具體工廠類別(圖中的 Factory1 和 Factory2)，具現實際產生具體產品的職責。
+  + 依照 AbstractFactory 介面實作的具體工廠類別(圖中的 Factory1 和 Factory2)，具現實際產生具體產品的職責。
 
 <br/>
 
