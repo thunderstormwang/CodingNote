@@ -1,4 +1,4 @@
-# [C# 4.0]Optional Parameter
+# [C# 4.0]Optional Parameter 選擇性參數
 
 在函式宣告時，加上預設值
 ```csharp
@@ -16,20 +16,20 @@ MyTestFunc(3.3, 40, "Assain's Creed");
 ```
 >p1: 3.30, p2: 40, p3:  "Assain's Creed"
 
-<br/>p3 使用可選參數
+<br/>p3 使用選擇性參數
 ```csharp
 MyTestFunc(3.3, 40);
 ```
 >p1: 3.30, p2: 40, p3:  "HelloWorld"
 
-<br/>p2, p3 使用可選參數
+<br/>p2, p3 使用選擇性參數
 ```csharp
 MyTestFunc(3.3);
 ```
 >p1: 3.30, p2: 100, p3:  "HelloWorld"
 
 <br/>這會 compiler error
-<br/>無法跳過中間的參數，必須從該參數之後都使用可選參數
+<br/>無法跳過中間的參數，必須從該參數之後都使用選擇性參數
 ```csharp
 MyTestFunc(2000, , "Assain's Creed");
 ```

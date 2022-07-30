@@ -1,4 +1,4 @@
-# [C# 3.0]Object and Collection Initializer
+# [C# 3.0]Object and Collection Initializer 物件和集合初始設定式
 
 ## Object Initializer
 
