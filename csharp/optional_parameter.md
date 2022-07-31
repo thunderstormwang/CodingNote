@@ -28,9 +28,9 @@ MyTestFunc(3.3);
 ```
 >p1: 3.30, p2: 100, p3:  "HelloWorld"
 
-<br/>這會 compiler error
 <br/>無法跳過中間的參數，必須從該參數之後都使用選擇性參數
 ```csharp
+// compiler error
 MyTestFunc(2000, , "Assain's Creed");
 ```
 

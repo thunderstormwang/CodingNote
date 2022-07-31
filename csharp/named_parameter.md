@@ -27,7 +27,7 @@ MyTestFunc(33.3, p3: "Ubisoft", p2: 500, p4: "Assassin's Creed");
 <br/>一旦使用具名參數後, 後面都須要比照具名參數的方式給值
 <br/>p1 照順序, p2, p3 用具名參數, 那麼排在後面的 p4 也需要用具名參數
 ```csharp
+// compiler error
 MyTestFunc(33.3, p3: "Ubisoft", p2: 500, "Assassin's Creed");
 ```
-compiler 會提示編繹錯誤:
 >Named argument specifications must appear after all fixed arguments have been specified
