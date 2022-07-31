@@ -1,4 +1,4 @@
-# [C#]Init-Only property
+# [C# 9.0]Init-Only property
 
 以往在 C# 想創造不可變(immutable)的 property, 可以這樣寫
 <br/>在初始化給過值後, 就不能再改變值
