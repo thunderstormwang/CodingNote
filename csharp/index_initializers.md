@@ -39,4 +39,34 @@ Dictionary<string, int> dict = new Dictionary<string, int>()
 };
 ```
 
-## list
+## 其它例子
+
+```csharp
+public class MyClass
+{
+    private int[] _intArray = new int [10];
+    private Dictionary<string, string> _dict = new Dictionary<string, string>();
+
+    public int this[int index]
+    {
+        get => _intArray[index];
+        set => _intArray[index] = value;
+    }
+    
+    public string this[string index]
+    {
+        get => _dict[index];
+        set => _dict[index] = value;
+    }
+}
+```
+
+```csharp
+var myClass = new MyClass()
+{
+    [1] = 10,
+    [2] = 20,
+    ["Hello"] = "World",
+    ["Microsoft"] = "Teams",
+};
+```
