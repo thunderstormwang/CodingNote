@@ -24,7 +24,7 @@ public class Handler2
 }
 ```
 
-<br/>我在寫測試時，一直想著能否用同一個 func，像這樣
+<br/>我在寫測試時，一直想著能否用同一個 func，像這樣寫個 BaseHanderTest
 ```csharp
 public class BaseHanderTest<THandler, TResponse>
 {
@@ -33,6 +33,7 @@ public class BaseHanderTest<THandler, TResponse>
 }
 ```
 
+<br/>然後 Handler1Test 去繼承 BaseHanderTest
 ```csharp
 public class Handler1Test : BaseHanderTest<Hander1, string>
 {
@@ -43,7 +44,7 @@ public class Handler1Test : BaseHanderTest<Hander1, string>
 }
 ```
 
-<br/>在 Handler1 都沒問題，在 Handler2 卻一直 compiler error
+<br/>在 Handler1Test 都沒問題，在 Handler2Test 卻一直 compiler error
 ```csharp
 public class Handler2Test : BaseHanderTest<Handler2, Task>
 {
@@ -59,7 +60,7 @@ public class Handler2Test : BaseHanderTest<Handler2, Task>
 <br/>這裡我卡了很久，一直認為可以用同一個 func 解決，最後才發現因為在 BaseHanderTest 的 func 是 ``` Func<Task<TResponse>>  ```。
 <br/>如果 TResponse 代入 string，就是``` Func<Task<string>>  ``` 這符合 ``` public Task<string> DoSomething() ``` 的簽章。
 <br/>但如果 TResponse 代入 Task，就是``` Func<Task<Task>>  ``` 這不符合 ``` public Task DoSomething() ``` 的簽章。
-<br/>所以我怎麼試都試不出來...。
+<br/>所以我怎麼試都試不出來...。其實錯誤訊息給得很清楚了，就是自己資質太差看不懂。
 
 ## 解法 1.
 拆成不同的 BaseHandlerTest
