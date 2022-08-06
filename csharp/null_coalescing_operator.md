@@ -1,4 +1,4 @@
-# [C#]?? & ??= Operrator - Null-Coalescing Operator
+# [C#]?? & ??= Operrator - Null-Coalescing Operator - Null 聯合運算子
 
 The null-coalescing operator ?? returns the value of its left-hand operand if it isn't null; otherwise, it evaluates the right-hand operand and returns its result. The ?? operator doesn't evaluate its right-hand operand if the left-hand operand evaluates to non-null.
 
@@ -40,7 +40,7 @@ string s = GetStringValue();
 Console.WriteLinke(s ?? "Unspecified");
 ```
 >Unspecified
-
+---
 #### C# 8.0 後可以使用 ??= 運算子
 
 以下寫法

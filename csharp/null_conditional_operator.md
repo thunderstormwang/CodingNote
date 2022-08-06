@@ -1,4 +1,4 @@
-# [C# 6.0]?. & ?[ Operator - Null-conditional Operator?
+# [C# 6.0]?. & ?[ Operator - Null-conditional Operator
 
 C# 6.0 推出了新寫法，簡化物件的 null 檢查
 
