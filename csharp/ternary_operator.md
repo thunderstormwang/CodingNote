@@ -1,4 +1,4 @@
-# [C#]?: Operator - Ternary(Conditional) Operator
+# [C#]?: Operator - Ternary(Conditional) Operator - 三元條件運算子
 
 C# includes a decision-making operator ?: which is called the conditional operator or ternary operator. It is the short form of the if else conditions.
 
