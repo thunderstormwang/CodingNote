@@ -11,6 +11,8 @@
   - [取得特定 private property](#取得特定-private-property)
   - [設定特定 private property](#設定特定-private-property)
   - [呼叫 Private Method](#呼叫-private-method)
+  - [取得特定 attribute](#取得特定-attribute)
+  - [取得所有掛有指定 attribute 的 property](#取得所有掛有指定-attribute-的-property)
 
 todo: attribute
 ---
@@ -24,11 +26,7 @@ public class MyData
     private string privateFieldString = "Hello World!!";
 }
 ```
-```csharp
-var myData = new MyData();
-LoopThroughField(myData);
-```
-<br/>取得所有 public fields
+<br/>取得所有 public fields 的方法
 ```csharp
 public void LoopThroughField(object data)
 {
@@ -44,7 +42,7 @@ public void LoopThroughField(object data)
         else if (temp is double)
         {
             var value = (double)temp;
-            Console.WriteLine($"{name} is int, value: {value}");
+            Console.WriteLine($"{name} is double, value: {value}");
         }
         else if (temp is string)
         {
@@ -54,16 +52,17 @@ public void LoopThroughField(object data)
     }
 }
 ```
+<br/>呼叫該方法
+```csharp
+var myData = new MyData();
+LoopThroughField(myData);
+```
 >fieldInt is int, value: 10
-<br/>fieldDouble is int, value: 123.12
+<br/>fieldDouble is double, value: 123.12
 
 ---
 ## 取得特定 private field
-```csharp
-var myData = new MyData();
-GetField(myData, "privateFieldString");
-```
-<br/>取得特定 private field
+取得特定 private field 的方法
 ```csharp
 public void GetField(object data, string fieldName)
 {
@@ -85,16 +84,16 @@ public void GetField(object data, string fieldName)
     Console.WriteLine($"{name} is int, value: {value}");
 }
 ```
+<br/>呼叫該方法
+```csharp
+var myData = new MyData();
+GetField(myData, "privateFieldString");
+```
 >privateFieldString is int, value: Hello World!!
 
 ---
 ## 設定特定 private field
-
-```csharp
-var myData = new MyData();
-SetField(myData, "privateFieldString", "ABCDEFG");
-```
-<br/>取得特定 private field
+取得特定 private field 的方法
 ```csharp
 public void SetField(object data, string fieldName, object newValue)
 {
@@ -108,6 +107,11 @@ public void SetField(object data, string fieldName, object newValue)
     var name = fieldInfo.Name;
     fieldInfo.SetValue(data, newValue);
 }
+```
+<br/>呼叫該方法
+```csharp
+var myData = new MyData();
+SetField(myData, "privateFieldString", "ABCDEFG");
 ```
 
 ---
@@ -128,11 +132,7 @@ public class MyData
     }
 }
 ```
-```csharp
-var myData = new MyData();
-LoopThroughProperty(myData);
-```
-<br/>取得所有 public properties
+<br/>取得所有 public properties 的方法
 ```csharp
 public void LoopThroughProperty(object data)
 {
@@ -148,7 +148,7 @@ public void LoopThroughProperty(object data)
         else if (temp is double)
         {
             var value = (double)temp;
-            Console.WriteLine($"{name} is int, value: {value}");
+            Console.WriteLine($"{name} is double, value: {value}");
         }
         else if (temp is string)
         {
@@ -158,16 +158,17 @@ public void LoopThroughProperty(object data)
     }
 }
 ```
+<br/>呼叫該方法
+```csharp
+var myData = new MyData();
+LoopThroughProperty(myData);
+```
 >propertyInt is int, value: 10
-<br/>PropertyDouble is int, value: 123.12
+<br/>PropertyDouble is double, value: 123.12
 
 ---
 ## 取得特定 private property
-```csharp
-var myData = new MyData();
-LoopThroughField(myData);
-```
-<br/>取得特定 private property
+取得特定 private property 的方法
 ```csharp
 public void GetProperty(object data, string fieldName)
 {
@@ -189,16 +190,16 @@ public void GetProperty(object data, string fieldName)
     Console.WriteLine($"{name} is int, value: {value}");
 }
 ```
+<br/>呼叫該方法
+```csharp
+var myData = new MyData();
+LoopThroughField(myData);
+```
 >privatePropertyString is int, value: Hello World!!
 
 ---
 ## 設定特定 private property
-
-```csharp
-var myData = new MyData();
-SetField(myData, "privateFieldString", "ABCDEFG");
-```
-<br/>取得特定 private property
+取得特定 private property 的方法
 ```csharp
 public void SetProperty(object data, string fieldName, object newValue)
 {
@@ -213,10 +214,15 @@ public void SetProperty(object data, string fieldName, object newValue)
     fieldInfo.SetValue(data, newValue);
 }
 ```
+<br/>呼叫該方法
+```csharp
+var myData = new MyData();
+SetField(myData, "privateFieldString", "ABCDEFG");
+```
 
 ---
 ## 呼叫 Private Method
-
+宣告類別
 ```csharp
 public class MyData
 {
@@ -226,11 +232,7 @@ public class MyData
     }
 }
 ```
-```csharp
-var myData = new MyData();
-var result = ExecuteMethod(myData, "Hello", new object[] { "John" });
-```
-<br/>呼叫 Private Method
+<br/>呼叫 Private Method 的方法
 ```csharp
 private object ExecuteMethod(object instance, string methodName, object[] methodParam)
 {
@@ -246,3 +248,111 @@ private object ExecuteMethod(object instance, string methodName, object[] method
     return result;
 }
 ```
+<br/>呼叫該方法
+```csharp
+var myData = new MyData();
+var result = ExecuteMethod(myData, "Hello", new object[] { "John" });
+```
+
+## 取得特定 attribute
+宣告 enum
+```csharp
+public enum LightSwitch
+{
+    [Description("打開")]
+    On = 1,
+
+    [Description("關閉")]
+    Off = 2,
+}
+```
+<br/>宣告取得特定 attribute 的擴充方法
+```csharp
+public static class EnumExtension
+{
+    public static string GetDescription(this Enum @enum)
+    {
+        var atr = GetAttribute<DescriptionAttribute>(@enum);
+        return atr != null ? atr.Description : string.Empty;
+    }
+
+    private static T GetAttribute<T>(Enum @enum) where T : Attribute
+    {
+        var fieldInfo = @enum.GetType().GetField(@enum.ToString());
+        if (fieldInfo == null)
+        {
+            return null;
+        }
+
+        var attribute = fieldInfo.GetCustomAttribute(typeof(T), false) as T;
+        return attribute;
+    }
+}
+```
+<br/>呼叫該方法
+```csharp
+Console.WriteLine($"LightSwitch.On: {LightSwitch.On.GetDescription()}");
+Console.WriteLine($"LightSwitch.Off: {LightSwitch.Off.GetDescription()}");
+```
+
+>LightSwitch.On: 打開
+<br/>LightSwitch.Off: 關閉
+
+## 取得所有掛有指定 attribute 的 property
+
+宣告自訂 attribute
+```csharp
+public class PrintAttribute : Attribute
+{}
+```
+<br/>宣告類別，並在其中一個 property 掛上 PrintAttribute
+```csharp
+public class MyData
+{
+    public int propertyInt { get; set; }
+    
+    [PrintAttribute]
+    public double PropertyDouble { get; set; }
+    
+    private string privatePropertyString { get; set; }
+
+    public MyData()
+    {
+        propertyInt = 10;
+        PropertyDouble = 123.12d;
+        privatePropertyString = "Hello World!!";
+    }
+}
+```
+<br/>取得所有掛有指定 attribute 的 property 的方法
+```csharp
+public void LoopThroughProperty(object data, Type attrType)
+{
+    foreach (var fieldInfo in data.GetType().GetProperties().Where( prop => prop.IsDefined(attrType, false)))
+    {
+        var name = fieldInfo.Name;
+        var temp = fieldInfo.GetValue(data);
+        if (temp is int)
+        {
+            var value = (int)temp;
+            Console.WriteLine($"{name} is int and have PrintAttribute, value: {value}");
+        }
+        else if (temp is double)
+        {
+            var value = (double)temp;
+            Console.WriteLine($"{name} is double and have PrintAttribute, value: {value}");
+        }
+        else if (temp is string)
+        {
+            var value = (string)temp;
+            Console.WriteLine($"{name} is string and have PrintAttribute, value: {value}");
+        }
+    }
+}
+```
+<br/>呼叫該方法
+```csharp
+var myData = new MyData();
+LoopThroughProperty(myData, typeof(PrintAttribute));
+```
+>PropertyDouble is double and have PrintAttribute, value: 123.12
