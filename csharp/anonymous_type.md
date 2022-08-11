@@ -41,7 +41,7 @@ anonymousTyp1.Name = "Peter"
 
 ---
 
-### 注意事項
+## 注意事項
 - compiler 沒有為匿名型別實作 IDisposable 介面，因此你應該避免在匿名型別中存放可丟棄的(disposable)物件。
 - 不能當作參數傳遞，也不應該放進如 List 之類的 collection。
 - 承上，你可轉型成 object 做傳遞，這可以被 compile，但沒有意義，因為轉型不回來，也失去 intellisense
