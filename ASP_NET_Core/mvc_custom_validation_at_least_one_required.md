@@ -1,4 +1,4 @@
-# [驗證]自訂驗證(包含前後端) 至少輸入一個欄位
+# [驗證] Mvc 自訂驗證(包含前後端) 至少輸入一個欄位
 
 4個步驟
 1. 繼承 ValadationAttribute，達成後端驗證
@@ -6,33 +6,21 @@
 3. 寫自訂的 js 驗證函式
 4. 寫 adapter 使 js 驗證函式看得懂
 
-<br/>Model
+<br/>以此 Model，Email 和 Phone 至少要輸入一個
 ```csharp
-public class AddBannerCommand
+public class Person
 {
     [Required]
-    public DateTime StartTime { get; set; }
+    public string Name { get; set; }
 
-    [Required]
-    public DateTime EndTime { get; set; }
+    [AtLeastOneRequired(nameof(Email), nameof(Phone),ErrorMessage = "At least one of Email, Phone is required")]
+    public string Email { get; set; }
 
-    [Required]
-    public string Title { get; set; }
-
-    [Required]
-    public string Picture { get; set; }
-
-    [AtLeastOneRequired(nameof(CampaignId), nameof(PxBoxPath), ErrorMessage = "活動頁 Id, 稱購路徑至少須填入一個")]
-    public int? CampaignId { get; set; }
-    
-    /// <summary>
-    /// 箱購路徑
-    /// </summary>
-    public string PxBoxPath { get; set; }
+    public string Phone { get; set; }
 }
 ```
 
-<br/>宣告 AtLeastOneRequiredAttritube，並繼承ValadationAttribute、IClientValidatable
+<br/>宣告 AtLeastOneRequiredAttritube，並繼承 ValadationAttribute, IClientValidatable
 ```csharp
 public class AtLeastOneRequiredAttribute : ValidationAttribute
 {
