@@ -1,6 +1,6 @@
 # [驗證] 自訂 Api 驗證回傳 Model
 
-使用平台.Net Core 6.0
+使用平台: .Net Core 6.0
 
 ---
 
