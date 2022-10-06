@@ -1,6 +1,6 @@
 # 讓 api 接受和回傳 snake case 的 json
 
-使用平台.Net Core 6.0
+使用平台: .Net Core 6.0
 
 ---
 
@@ -139,7 +139,9 @@ public class ValidationProblemDetails : ProblemDetails
 
     public string RequestId => Guid.NewGuid().ToString();
 }
+```
 
+```csharp
 public class ValidationProblemDetailsResult : IActionResult
 {
     public async Task ExecuteResultAsync(ActionContext context)
@@ -167,7 +169,9 @@ public class ValidationProblemDetailsResult : IActionResult
             statusCode: ValidationProblemDetails.ValidationStatusCode).WriteAsync();
     }
 }
+```
 
+```csharp
 public class ValidationError
 {
     public ValidationError(string name, string description)
@@ -180,7 +184,9 @@ public class ValidationError
 
     public string Description { get; }
 }
+```
 
+```csharp
 public class JsonErrorResponse<T>
 {
     private readonly HttpContext _context;
@@ -212,3 +218,27 @@ builder.Services.AddJsonOptions(x => { x.JsonSerializerOptions.PropertyNamingPol
         opt.InvalidModelStateResponseFactory = ctx => new ValidationProblemDetailsResult();
     });
 ```
+
+<br/>那麼驗證訊息就變成如下
+```json
+{
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "request_id": "00-7c56593efe9452ecba145474817c0063-b2393d5143958b47-00",
+  "validation_errors": [
+    {
+        "name": "last_name",
+        "description": The last_name field is required.
+    },
+    {
+        "name": "first_name",
+        "description": The first_name field is required.
+    }
+  ]
+}
+```
+
+---
+
+參考自
+- [How to accept and return snake case formatted JSON in ASP Web API](https://maximgorbatyuk.github.io/blog/development/2021-02-20-snake-case-and-asp-net-core/)

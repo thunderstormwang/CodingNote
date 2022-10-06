@@ -9,10 +9,10 @@ Model:
 public class Person
 {
     [Required]
-    public string Name { get; set; }
+    public string FirstName { get; set; }
 
     [Required]
-    public string Email { get; set; }
+    public string LastName { get; set; }
 }
 ```
 
@@ -27,14 +27,19 @@ public class Person
   "status": 400,
   "traceId": "00-4072dba34d846ecd5ddf23fb8a376dca-ea9b8c98980caab5-00",
   "errors": {
-    "Name": [
-      "The Name field is required."
+    "firstName": [
+      "The firstName field is required."
+    ],
+    "lastName": [
+      "The lastName field is required."
     ]
   }
 }
 ```
 
 <br/>這結構可能對使用 api 的人不那麼友善，那麼我們可以自訂驗證回傳的 model
+
+## 一、關閉預設開啓的驗證, 自己撰寫驗證的 ActionFilter
 
 <br/>關閉預設開啓的驗證
 ```csharp
@@ -73,5 +78,12 @@ public class MyModelValidationFilter : IActionFilter
 ```
 // ReturnCode: 400
 
-The Name field is required., The Email field is required.
+The lastName field is required., The firstName field is required.
 ```
+
+--- 
+## 二、關閉預設開啓的驗證, 自己撰寫驗證的 ActionFilter、ExceptionFilter
+
+---
+
+## 三、改提供自己的 InvalidModelStateResponseFactory
