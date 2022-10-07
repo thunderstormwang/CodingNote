@@ -160,6 +160,8 @@ GET roody-test-no_ik/_search
 
 如果我們用 match phrase query 去尋找「衛生」，是可以查結果，分數 0.5753642
 
+---
+
 ## 套用 IK 分詞器
 
 輸入
@@ -267,7 +269,7 @@ PUT test_with_ik
 }
 ```
 
-塞入 document「永豐餘柔情特柔連續抽取式衛生」
+塞入 document「永豐餘柔情特柔連續抽取式衛生」，依上面的結果，我們知道會以這些詞「永豐餘、永豐、豐餘、柔情、特柔、連續、抽取式、抽取、式、衛生」作為倒排索引‧
 ```
 POST test_with_ik/_doc
 {
@@ -275,7 +277,7 @@ POST test_with_ik/_doc
 }
 ```
 
-再用 term query 去尋找「衛生」，就可以查到結果，分數 0.2876821
+再用 term query 去尋找「衛生」，這次就可以查到結果，分數 0.2876821
 ```
 GET test_with_ik/_search
 {
