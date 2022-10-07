@@ -9,7 +9,7 @@ ELK 是由三個工具組成，Elasticsearch (E) 、Logstash (L) 、Kibana (K) �
 
 <br/>整體流程如下:
 
-![elk 概觀](imgs\elk_overriew.png)
+![elk 概觀](imgs/elk_overriew.png)
 
 ---
 
