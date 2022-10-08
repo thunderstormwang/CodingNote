@@ -1,4 +1,4 @@
-# [C# 2.0]Nullable Type
+# [C# 2.0]Nullable Value Type
 
 讓實質型別(value type)也可以為 null
 ```csharp
