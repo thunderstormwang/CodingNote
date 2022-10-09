@@ -17,7 +17,8 @@ public class Person
 ```
 
 <br/>如果指定 controller 為 ApiController，預設會幫你開啓驗證，
-<br/>如果傳入的 model 有錯，就會回傳下列結構
+
+如果傳入的 model 有錯，就會回傳下列結構
 ```json
 // ReturnCode: 400
 
@@ -50,7 +51,17 @@ builder.Services.AddControllers()
     });
 ```
 
-<br/>撰寫 ActionFilter
+<br/>自訂 api 回傳 Model
+```csharp
+public class MyApiResponse<T>
+{
+    public string Code { get; set; }
+
+    public T Data { get; set; }
+}
+```
+
+<br/>撰寫 ActionFilter 繼承 IActionFilter
 ```csharp
 public class MyModelValidationFilter : IActionFilter
 {
@@ -60,12 +71,17 @@ public class MyModelValidationFilter : IActionFilter
         {
             return;
         }
-        
+
         var errors = context.ModelState.Values.SelectMany(t => t.Errors)
             .Select(t => t.ErrorMessage);
-        var errorMessage = string.Join(", ", errors);
 
-        context.Result = new BadRequestObjectResult(errorMessage);
+        var errorResponse = new MyApiResponse<IEnumerable<string>>()
+        {
+            Code = "9999",
+            Data = errors
+        };
+
+        context.Result = new BadRequestObjectResult(errorResponse);
     }
 
     public void OnActionExecuted(ActionExecutedContext context)
@@ -74,11 +90,47 @@ public class MyModelValidationFilter : IActionFilter
 }
 ```
 
-<br/>那麼回傳結構就會變成如下
+<br/>撰寫 ActionFilter 繼承  IAsyncActionFilter
+```csharp
+public class MyAsyncModelValidationFilter : IAsyncActionFilter
+{
+    /// <inheritdoc />
+    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    {
+        if (context.ModelState.IsValid)
+        {
+            return;
+        }
+
+        var errors = context.ModelState.Values.SelectMany(t => t.Errors)
+            .Select(t => t.ErrorMessage);
+
+        var errorResponse = new MyApiResponse<IEnumerable<string>>()
+        {
+            Code = "9999",
+            Data = errors
+        };
+
+        context.HttpContext.Response.ContentType = "application/json";
+        context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+        await context.HttpContext.Response.WriteAsJsonAsync(errorResponse);
+    }
+}
 ```
+
+<br/>然後依你需求掛在 Action 或 Controller 或 Global 上面
+
+那麼回傳結構就會變成如下
+```json
 // ReturnCode: 400
 
-The lastName field is required., The firstName field is required.
+{
+  "code": "9999",
+  "data": [
+    "The LastName field is required.",
+    "The FirstName field is required."
+  ]
+}
 ```
 
 --- 
