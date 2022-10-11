@@ -1,7 +1,11 @@
-# elk 安裝筆記
+# ELK 安裝筆記
 
 - [ ] 看 serilog, nlog 寫  docker log 的差別
   - 在 AWS 開兩台機器架，分別架  elk 和程式，將程式的 log 送到 elk
+
+---
+
+可自 [deviantony/docker-elk](https://github.com/deviantony/docker-elk) 下載 ELK 的 docker compose 檔案，改成自己需要的運作模式，裡面也有給解說
 
 ---
 
