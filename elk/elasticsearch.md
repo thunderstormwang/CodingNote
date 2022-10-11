@@ -1,5 +1,16 @@
 # Elasticsearch
 
+## 與 RDB 的比較
+
+
+| RDB    | Elasticsearch |
+|--------|---------------|
+| Table  | Index         |
+| Row    | Document      |
+| Column | Field         |
+| Schema | Mapping       |
+| SQL    | DSL           |
+
 ## 欄位型態 text 和 keyword 的差別
 
 keyword 適合用來存結構化的內容，如 ID、email 地址、域名、狀態碼、郵遞區號。
@@ -47,3 +58,9 @@ Match Query 和 Match Phrase Query 的輸入都會被分詞器處理過再拿去
 ---
 
 .Net 在 elasticsearch 可用兩種套件，[Elasticsearch.Net](https://github.com/NickCraver/NEST/tree/master/src/Elasticsearch.Net) 和 [NEST](https://github.com/NickCraver/NEST)，[兩者差別](https://github.com/NickCraver/NEST)
+
+---
+
+參考自
+- 官網
+- [[Elasticsearch] 基本概念 & 搜尋入門](https://godleon.github.io/blog/Elasticsearch/Elasticsearch-getting-started/)

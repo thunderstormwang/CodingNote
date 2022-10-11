@@ -1,7 +1,7 @@
 # elk 安裝筆記
 
-[ ] 看 serilog, nlog 寫  docker log 的差別
-- 在 AWS 開兩台機器架，分別架  elk 和程式，將程式的 log 送到 elk
+- [ ] 看 serilog, nlog 寫  docker log 的差別
+  - 在 AWS 開兩台機器架，分別架  elk 和程式，將程式的 log 送到 elk
 
 ---
 
@@ -19,29 +19,33 @@ ncat 127.0.0.1 5000 < hello.txt
 
 ---
 
-查 elasticsearch index
+<br/>查 elasticsearch index
 ```shell
 curl -XGET http://127.0.0.1:9200/_cat/indices?v
 curl -H "Authorization: ApiKey {your_apikey}" -XGET http://127.0.0.1:9200/_cat/indices?v
 ```
-線程狀態
+
+<br/>線程狀態
 ```shell
 curl -s -XGET http://127.0.0.1:9200/_cat/thread_pool?v
 ```
-叢集狀態
+
+<br/>叢集狀態
 ```shell
 curl -XGET http://127.0.0.1:9200/_cat/health?v
 ```
-節點狀態
+
+<br/>節點狀態
 ```shell
 curl -XGET http://127.0.0.1:9200/_cat/nodes?v
 ```
-可以透過參數 ?help 來幫助我們了解各個回傳結果欄位所代表的意義
+
+<br/>可以透過參數 ?help 來幫助我們了解各個回傳結果欄位所代表的意義
 ```shell
 curl -s -XGET http://127.0.0.1:9200/_cat/thread_pool?help
 ```
 
-建立 log 資料
+<br/>建立 log 資料
 ```http
 POST http://127.0.0.1:9200/my-diablo-2022/_doc HTTP/1.1 
 Content-Type: application/json 

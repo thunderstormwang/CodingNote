@@ -133,9 +133,6 @@ public class MyAsyncModelValidationFilter : IAsyncActionFilter
 }
 ```
 
---- 
-## 二、關閉預設開啓的驗證, 自己撰寫驗證的 ActionFilter、ExceptionFilter
-
 ---
 
-## 三、改提供自己的 InvalidModelStateResponseFactory
+## 二、改提供自己的 InvalidModelStateResponseFactory
