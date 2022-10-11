@@ -38,7 +38,7 @@ public class Person
 }
 ```
 
-## 讓 api 接受和回傳 snake case
+## 讓 api 在 requst body 和 resonse body 都接受 snake case
 
 使用套件 Newtonsoft.Json
 
@@ -74,7 +74,7 @@ public static class JsonSerializationExtensions
             throw new ArgumentNullException(paramName: nameof(@string));
         }
 
-        return _snakeCaseNamingStrategy.GetPropertyName(@string, false);
+        return Regex.Replace(@string, @"(\w)([A-Z])", "$1_$2").ToLower();
     }
 }
 ```
@@ -89,7 +89,7 @@ public class SnakeCaseNamingPolicy : JsonNamingPolicy
 
 <br/>在 program.cs 加上
 ```csharp
-builder.Services.AddJsonOptions(x => { x.JsonSerializerOptions.PropertyNamingPolicy = new SnakeCaseNamingPolicy(); })
+builder.Services.AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = new SnakeCaseNamingPolicy());
 ```
 
 <br/>那麼 api 就接受和回傳 snake case 了
@@ -101,6 +101,82 @@ builder.Services.AddJsonOptions(x => { x.JsonSerializerOptions.PropertyNamingPol
   "money": 0
 }
 ```
+
+---
+
+## 讓 api 在 Query parameters 接受 snake case
+
+<br/>SnakeCaseQueryValueProvider
+```csharp
+public class SnakeCaseQueryValueProvider : QueryStringValueProvider, IValueProvider
+{
+    public SnakeCaseQueryValueProvider(BindingSource bindingSource, IQueryCollection values, CultureInfo culture) : base(bindingSource, values,
+        culture)
+    {
+    }
+
+    public override bool ContainsPrefix(string prefix)
+    {
+        return base.ContainsPrefix(prefix.ToSnakeCase());
+    }
+
+    public override ValueProviderResult GetValue(string key)
+    {
+        return base.GetValue(key.ToSnakeCase());
+    }
+}
+```
+
+<br/>SnakeCaseQueryValueProviderFactory
+```csharp
+public class SnakeCaseQueryValueProviderFactory : IValueProviderFactory
+{
+    public Task CreateValueProviderAsync(ValueProviderFactoryContext context)
+    {
+        if (context == null)
+        {
+            throw new ArgumentNullException(nameof(context));
+        }
+
+        var valueProvider =
+            new SnakeCaseQueryValueProvider(BindingSource.Query, context.ActionContext.HttpContext.Request.Query, CultureInfo.CurrentCulture);
+
+        context.ValueProviders.Add(valueProvider);
+
+        return Task.CompletedTask;
+    }
+}
+```
+
+<br/>在 program.cs 加上，讓 Query parameters 接受 snake case
+```csharp
+builder.Services.AddControllers(options => options.ValueProviderFactories.Add(new SnakeCaseQueryValueProviderFactory()));
+```
+
+### 讓 swagger 在 Query parameters 的名稱也變成 snake case
+
+```csharp
+public class SnakeCaseParameterOperationFilter : IOperationFilter
+{
+    public void Apply(OpenApiOperation operation, OperationFilterContext context)
+    {
+        if (operation.Parameters == null) operation.Parameters = new List<OpenApiParameter>();
+        else { 
+            foreach(var item in operation.Parameters)
+            {             
+                item.Name = item.Name.ToSnakeCase();
+            }              
+        }
+    }
+}
+```
+
+<br/>在 program.cs 加上
+```csharp
+builder.Services.AddSwaggerGen(s => s.OperationFilter<SnakeCaseParameterOperationFilter>());
+```
+
+---
 
 ## 讓 model 驗證訊息也回傳 snake case
 
@@ -212,11 +288,7 @@ public class JsonErrorResponse<T>
 
 <br/>在 program.cs 加上
 ```csharp
-builder.Services.AddJsonOptions(x => { x.JsonSerializerOptions.PropertyNamingPolicy = new SnakeCaseNamingPolicy(); })
-    .ConfigureApiBehaviorOptions(opt =>
-    {
-        opt.InvalidModelStateResponseFactory = ctx => new ValidationProblemDetailsResult();
-    });
+builder.Services.ConfigureApiBehaviorOptions(options => options.InvalidModelStateResponseFactory = ctx => new ValidationProblemDetailsResult());
 ```
 
 <br/>那麼驗證訊息就變成如下
@@ -242,3 +314,4 @@ builder.Services.AddJsonOptions(x => { x.JsonSerializerOptions.PropertyNamingPol
 
 參考自
 - [How to accept and return snake case formatted JSON in ASP Web API](https://maximgorbatyuk.github.io/blog/development/2021-02-20-snake-case-and-asp-net-core/)
+- [FromQuery parameters from camelCase/PascalCase to snake_case .Net Core](https://stackoverflow.com/questions/69197645/fromquery-parameters-from-camelcase-pascalcase-to-snake-case-net-core)
