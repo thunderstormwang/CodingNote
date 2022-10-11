@@ -28,7 +28,7 @@ public class Person
 }
 ```
 
-<br/>如果我們希望它是 snake case, 需要做點加工
+<br/>如果我們希望它是 snake case，需要做點加工。
 ```json
 {
   "last_name": "string",
@@ -37,6 +37,10 @@ public class Person
   "money": 0
 }
 ```
+
+<br/>做法可以在每個 property 掛 attribute 指定想要的名字，這很花工夫，可能打錯名字、少掛 attribute。
+
+那可以用以下的方法，做一次工就套用到整個專案
 
 ## 讓 api 在 requst body 和 resonse body 都接受 snake case
 
