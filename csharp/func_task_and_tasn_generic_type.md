@@ -1,4 +1,4 @@
-# [C#]Task 和 Task<T> 是不同
+# [C#]Task 和 Task\<T> 是不同
 
 現在公司專案，大多分成兩種 handler
 
@@ -33,7 +33,9 @@ public class BaseHanderTest<THandler, TResponse>
 }
 ```
 
-<br/>然後 Handler1Test 去繼承 BaseHanderTest
+<br/>然後 Handler1Test、Handler1Test 去繼承 BaseHanderTest
+
+以下是 Handler1Test，可以編譯過
 ```csharp
 public class Handler1Test : BaseHanderTest<Hander1, string>
 {
@@ -44,7 +46,7 @@ public class Handler1Test : BaseHanderTest<Hander1, string>
 }
 ```
 
-<br/>在 Handler1Test 都沒問題，在 Handler2Test 卻一直 compiler error
+<br/>可是在 Handler2Test 卻一直 compiler error
 ```csharp
 public class Handler2Test : BaseHanderTest<Handler2, Task>
 {
@@ -58,9 +60,12 @@ public class Handler2Test : BaseHanderTest<Handler2, Task>
 >[CS4010] 無法將非同步 Lambda 運算式 轉換成委派類型 'Task\<Task>'。非同步 Lambda 運算式 可能會傳回 void、Task 或 Task\<T>，而這些都無法轉換成 'Task\<Task>'。
 
 <br/>這裡我卡了很久，一直認為可以用同一個 func 解決，最後才發現因為在 BaseHanderTest 的 func 是 ``` Func<Task<TResponse>>  ```。
-<br/>如果 TResponse 代入 string，就是``` Func<Task<string>>  ``` 這符合 ``` public Task<string> DoSomething() ``` 的簽章。
-<br/>但如果 TResponse 代入 Task，就是``` Func<Task<Task>>  ``` 這不符合 ``` public Task DoSomething() ``` 的簽章。
-<br/>所以我怎麼試都試不出來...。其實錯誤訊息給得很清楚了，就是自己資質太差看不懂。
+
+如果 TResponse 代入 string，就是 ``` Func<Task<string>>  ``` 這符合 ``` public Task<string> DoSomething() ``` 的簽章。
+
+但如果 TResponse 代入 Task，就是 ``` Func<Task<Task>>  ``` 這不符合 ``` public Task DoSomething() ``` 的簽章。函式要求回傳 ``` Task>  ``` 但 Func 是回傳 ``` Task<Task>  ```。
+
+所以我怎麼試都試不出來...。其實錯誤訊息給得很清楚了，就是自己資質太差看不懂。
 
 ## 解法 1.
 拆成不同的 BaseHandlerTest
@@ -82,6 +87,7 @@ public class Handler1Test : BaseHander1Test<Hander1, string>
 ```csharp
 public class BaseHander2Test<THandler>
 {    
+    protected THandler _handler;
     protected Func<Task> _func;
 }
 
@@ -96,7 +102,10 @@ public class Handler2Test : BaseHanderTest<Handler2>
 
 ## 解法 2.
 改變 func 的宣告，如此就可以用同一個 func，雖然編得過，但感覺怪怪的...
-<br/>所以我偏好第二種解法
+
+我偏向分開，比較容易讓人注意到是 Task 和 Task\<T>
+
+所以我偏好第一種解法
 ```csharp
 public class BaseHanderTest<THandler, TResponse>
 {
@@ -118,7 +127,6 @@ public class Handler2Test : BaseHanderTest<Handler2, Task>
 {
     public Handler2Test()
     {
-        // compiler error
         _func = async () => await DoSomething();        
     }
 }
