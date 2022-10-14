@@ -1,4 +1,4 @@
-# Thread.Sleep() 和 Task.Dealy() 的差別
+# [C#]Thread.Sleep() 和 Task.Dealy() 的差別
 
 先記到這樣，其實還有其它眉眉角角...
 
