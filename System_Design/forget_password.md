@@ -1,6 +1,8 @@
-# 重設密碼
+# 忘記密碼流程
 
-## Sequence Diagram
+## 忘記密碼
+
+### Sequence Diagram
 
 ```mermaid
 sequenceDiagram
@@ -41,6 +43,6 @@ BE ->>+ FE: 回傳更改密碼成功
 FE ->>+ User: 提示更改密碼成功
 ```
 
-## Flow Chart
+### Flow Chart
 
 ---

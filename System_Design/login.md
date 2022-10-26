@@ -1,6 +1,8 @@
-# 登入
+# 登入流程
 
-## Sequence Diagram
+## 登入
+
+### Sequence Diagram
 
 ```mermaid
 sequenceDiagram
@@ -43,13 +45,13 @@ else 不是首次登入
 end
 ```
 
-## Flow Chart
+### Flow Chart
 
 ---
 
-# 申請重發 QrCpoe
+## 申請重發 QrCpoe
 
-## Sequence Diagram
+### Sequence Diagram
 
 ```mermaid
 sequenceDiagram
@@ -74,13 +76,13 @@ User ->>+ FE: 輸入 驗證碼
 Note over FE, BE: 如上登入流程
 ```
 
-## Flow Chart
+### Flow Chart
 
 ---
 
-# 申請更新 QrCpoe
+## 申請更新 QrCpoe
 
-## Sequence Diagram
+### Sequence Diagram
 
 ```mermaid
 sequenceDiagram
@@ -105,4 +107,4 @@ User ->>+ FE: 輸入 驗證碼
 Note over FE, BE: 如上登入流程
 ```
 
-## Flow Chart
+### Flow Chart
