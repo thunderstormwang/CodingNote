@@ -15,7 +15,7 @@ participant DataBase
 User ->>+ FE: 點選登入
 FE ->>+ User: 顯示登入畫面
 User ->>+ FE: 輸入統編、帳密
-FE ->>+ BE: /api/1.0/auth/login
+FE ->>+ BE: /auth/login
 BE ->>+ BE: 檢查帳密<br/>檢查帳號狀態<br/>產生 Login Temp Ticket
 BE ->>+ Redis: 儲存 Login Temp Ticket
 Redis ->>+ BE: 
@@ -26,7 +26,7 @@ BE ->>+ FE: 回傳 Login Temp Ticket<br/>NeedSetPassword<br/>LoginInPast
 alt 首次登入，需要設定密碼
   FE ->>+ User: 顯示首次設定密碼畫面
   User ->>+ FE: 輸入統編、帳密
-  FE ->>+ BE: 加上 Login Temp Ticket<br/>/api/1.0/auth/set_password
+  FE ->>+ BE: 加上 Login Temp Ticket<br/>/auth/set_password
   BE ->>+ Redis: 以 Login Temp Ticket 取回帳號
   Redis ->>+ BE: 
   BE ->>+ BE: 檢查新密碼不得與預設密碼相同<br/>檢查帳號狀態<br/>發通知信至會員信箱
@@ -37,7 +37,7 @@ alt 首次登入，需要設定密碼
 else 不是首次登入
   FE ->>+ User: 顯示輸入驗證碼畫面
   User ->>+ FE: 輸入 驗證碼
-  FE ->>+ BE: 加上  Login Temp Ticket<br/>/api/1.0/auth/login_check_verification_code
+  FE ->>+ BE: 加上  Login Temp Ticket<br/>/auth/login_check_verification_code
   BE ->>+ Redis: 以 Login Temp Ticket 取回帳號
   Redis ->>+ BE: 
   BE ->>+ BE: 檢查驗證碼<br/>檢查帳號狀態<br/>產生 jwt token
@@ -94,7 +94,7 @@ participant DataBase
 User ->>+ FE: 在輸入驗證碼畫面點選申請補發 Qrcode
 FE ->>+ User: 顯示申請補發 Qrcode 畫面
 User ->>+ FE: 輸入統編、帳號、手機
-FE ->>+ BE: 加上 Login Temp Ticket<br/>/api/1.0/auth/apply_reissue_qrcode
+FE ->>+ BE: 加上 Login Temp Ticket<br/>/auth/apply_reissue_qrcode
 BE ->>+ Redis: 以 Login Temp Ticket 取回帳號
 Redis ->>+ BE: 
 BE ->>+ BE: 檢查手機號碼是否與原手機相同<br/>檢查帳號狀態<br/>取回原 Qrcode<br/>發重發 Qrcode 信至會員信箱
@@ -138,7 +138,7 @@ participant DataBase
 User ->>+ FE: 在輸入驗證碼畫面點選申請更新 Qrcode
 FE ->>+ User: 顯示申請更新 Qrcode 畫面
 User ->>+ FE: 輸入統編、帳號、手機
-FE ->>+ BE: 加上 Login Temp Ticket<br/>/api/1.0/auth/apply_update_qrcode
+FE ->>+ BE: 加上 Login Temp Ticket<br/>/auth/apply_update_qrcode
 BE ->>+ Redis: 以 Login Temp Ticket 取回帳號
 Redis ->>+ BE: 
 BE ->>+ BE: 檢查手機號碼是否與原手機相同<br/>檢查帳號狀態<br/>產生新 Qrcode<br/>發更新 Qrcode 信至會員信箱
