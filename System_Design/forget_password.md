@@ -14,12 +14,12 @@ participant DataBase
 
 User ->>+ FE: 點選忘記密碼
 FE ->>+ User: 顯示忘記密碼畫面
-User ->>+ FE: 輸入統編、帳號
+User ->>+ FE: 輸入帳號
 FE ->>+ BE: /auth/check_reset_password_data
 BE ->>+ BE: 發送重設密碼信件至會員信箱<br/>產生 Reset Password Ticket
 BE ->>+ Redis: 儲存 Reset Password Ticket
 Redis ->>+ BE: 
-BE ->>+ FE: 回傳發送的信箱位置
+BE ->>+ FE: 回傳發送的信箱位址
 FE ->>+ User: 提示會員去收信
 
 User ->>+ FE: 點選信中的重設密碼連結
@@ -49,30 +49,35 @@ FE ->>+ User: 提示更改密碼成功
 
 ### Flow Chart
 
-```mermaid
-flowchart TD
-A[忘記密碼頁] --> B{驗證統編帳號是否正確}
-B --> |是| C{是否為預設系統密碼}
-B --> |否| D[顯示資料不正確請重新輸入] --> K[結束]
-C --> |是| E[顯示尚未登入變更過密碼] --> K
-C --> |否| F[寄出忘記密碼信件<br/>含連結回重設密碼頁]
-F --> G{連結是否失效\n30分鐘內}
-G --> |是| H[提示連結失效] --> K
-G --> |否| I[重設密碼頁]
-I --> J[密碼重設完成<br/>寄信通知重設密碼成功]
-J --> K
-```
-
-先往失敗的情況(會立即結束))寫, 再寫成功的情況(較長)
+#### /auth/check_reset_password_data
 
 ```mermaid
 flowchart TD
-A[被呼叫 /auth/check_reset_password_data] --> B{驗證統編帳號是否正確}
-B --> |否| C[顯示資料不正確請重新輸入] --> K[結束]
+A[被呼叫 /auth/check_reset_password_data] --> B{驗證帳號是否正確}
+B --> |否| C[回傳資料不正確請重新輸入] --> K[結束]
 B --> |是| D{是否為預設系統密碼}
 D --> |是| E[回傳尚未登入變更過密碼] --> K
-D --> |否|F[產生 Reset Password Ticket<br/>發送重設密碼信件至會員信箱]
+D --> |否| F[產生 Reset Password Ticket<br/>儲存 Reset Password Ticket 且時效 30 分鐘<br/>發送重設密碼信件至會員信箱]
 F --> G[回傳發送的信件位址] --> K
+```
+
+#### /auth/check_reset_password_token
+
+```mermaid
+flowchart TD
+A[被呼叫 /auth/check_reset_password_token] --> B{檢查 Reset Password Ticket 是否仍有效}
+B --> |是| C[回傳有效] --> D[結束]
+B --> |否| E[回傳已失效] --> D
+```
+
+#### /auth/change_password
+
+```mermaid
+flowchart TD
+A[被呼叫 /auth/change_password] --> B{檢查 Reset Password Ticket 是否仍有效}
+B --> |否| C[回傳已失效] --> D[結束]
+B --> |是| E[以輸入的密碼重設密碼<br/>新增帳號歷程記錄<br/>發重設密碼成功通知信]
+E --> F[回傳更新成功] --> D
 ```
 
 ---
