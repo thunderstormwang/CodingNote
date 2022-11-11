@@ -1,6 +1,6 @@
 # 在 .Net Core WebApi 使用自訂的 Authentication handler 驗證 JWT
 
-總會有些情況我們會想自訂驗證方式，例如
+接續[在 .Net Core WebApi 使用 JWT 驗證](api_jwt.md)，總有些情況我們會想自訂驗證方式，例如
 - jwt 不放在 header 的 Authorization 欄位，想放另一個自訂欄位
 - 定義自己的驗證方式
 - 設計後門，在開發期間方便測試
@@ -60,3 +60,16 @@ var configuration = builder.Configuration;
 builder.Services.AddControllers();
 builder.Services.AddMyTokenAuthentication(configuration);
 ```
+
+todo 上面貼完整的 code
+
+<br/>如此就可以使用原生的角色驗證方式
+
+不過做到目前為止，還沒有看到公司的專案有在用原生的角色驗證方式，比較常看到是 Role、Function、這樣的組合，
+- role 須傳入字串, 打錯字很難發現
+- 讓 Function 還有 Action，例如全部、新增、編輯、刪除、查詢、審核
+- 產出 menu 選單
+
+todo 畫 DB 關係圖(Entity Relationship Diagrams)
+
+todo 加上範例 code，在 action 上掛 filter, 檢查符合 Function, Action 的用戶才可使用
