@@ -3,8 +3,8 @@
 接續[在 .Net Core WebApi 使用 JWT 驗證](api_jwt.md)，總有些情況我們會想自訂驗證方式，例如
 - jwt 不放在 header 的 Authorization 欄位，想放另一個自訂欄位
 - 定義自己的驗證方式
-- 設計後門，在開發期間方便測試
-- 想改變驗證不過的狀態碼
+- 設計在開發期間方便測試的後門
+- 想改變驗證不過的回傳訊息
 
 定義自己的 Authentication Handler
 ```csharp
@@ -62,14 +62,111 @@ builder.Services.AddMyTokenAuthentication(configuration);
 ```
 
 todo 上面貼完整的 code
+---
 
 <br/>如此就可以使用原生的角色驗證方式
 
-不過做到目前為止，還沒有看到公司的專案有在用原生的角色驗證方式，比較常看到是 Role、Function、這樣的組合，
-- role 須傳入字串, 打錯字很難發現
-- 讓 Function 還有 Action，例如全部、新增、編輯、刪除、查詢、審核
-- 產出 menu 選單
+不過做到目前為止，還沒有看到公司的專案有在用原生的角色驗證方式，或許是不夠彈性吧，而且 Roles 須傳入字串，不好維護的關係吧。
 
-todo 畫 DB 關係圖(Entity Relationship Diagrams)
+比較常看到的設計自己的 Role、Function、Action 的表
+- 定義該帳號有哪些 Role
+- 該 Role 有哪些 Function 
+- 該 Role 在這個 Function 有哪些 Action，例如全部、新增、編輯、刪除、查詢、審核
+- 以上述表格產出該帳號能看到的選單
+
+todo 底下待 review
+
+<br/>例如設計以下的 DB 關連
+```mermaid
+erDiagram
+Account ||--}o AccountRole : AccountId
+AccountRole }|--|| Role: RoleId
+Role }o--o{ RoleFunction: RoleId
+RoleFunction }|--|| Function: FunctionId
+RoleFunction }|--|| Action: ActionId
+
+Account {
+    int Id PK
+    string Account
+    string Password
+}
+AccountRole {
+    int Id PK
+    int AccountId
+    int RoleId
+}
+Role {
+    int Id PK
+    string RoleName
+}
+RoleFunction {
+    int Id
+    int RoleId
+    int FunctionId
+    int ActionId
+}
+Function {
+    int Id PK
+    string FunctionName
+    int Layer "第幾層選單"
+    int UpperFunctionId "上層選單, 0 代表無上層選單"
+}
+Action {
+    int Id PK
+    string ActionName
+}
+```
+
+<br/>就可以用以下的 sql 撈出該帳號擁有的角色和功能
+```sql
+DECLARE @account NVARCHAR = 'test'
+
+SELECT t.Account,
+       rf.RoleId,
+       r.Name AS 'RoleName',
+       rf.id  AS 'RoleFunctionId',
+       rf.FunctionId,
+       f.UpperFunctionId,
+       f.Name AS 'FunctionName',
+       action.Name AS 'ActionName'
+FROM RoleFunction rf
+         JOIN Action action
+              ON rf.ActionId = action.Id
+         JOIN Function f
+              ON rf.FunctionId = f.Id
+         JOIN AccountRole ar
+              ON rf.RoleId = ar.RoleId
+         JOIN Role r
+              ON ar.RoleId = r.Id
+         JOIN Account a
+              ON ar.MemberId = a.Id;
+WHERE a.Account = @account
+```
+
+<br/>再以下的 sql 撈出該帳號擁有的選單列表
+```sql
+DECLARE @account NVARCHAR = 'test'
+
+WITH MenuCTE(Account, Id, Layer, UpperFunctionId, Name) AS
+         (SELECT a.Account, f.Id, f.Layer, f.UpperFunctionId, f.Name
+          FROM Function f
+                   JOIN RoleFunction rf
+                        ON f.Id = rf.FunctionId
+                   JOIN AccountRole ar
+                        ON rf.RoleId = ar.RoleId
+				   JOIN Account a
+   				        ON ar.MemberId = a.Id;
+		  WHERE a.Account = @account
+          UNION ALL
+          SELECT a.Account, f.Id, f.Layer, f.UpperFunctionId, f.Name
+          FROM Function AS f
+                   JOIN Account a
+                        ON a.Account = @account
+                   INNER JOIN ScmFuncCTE AS sfCTE
+                              ON f.Id = sfCTE.UpperFunctionId)
+SELECT DISTINCT Account, Id AS FunctionId, Layer, UpperFunctionId, Name
+FROM MenuCTE;
+
+```
 
 todo 加上範例 code，在 action 上掛 filter, 檢查符合 Function, Action 的用戶才可使用
