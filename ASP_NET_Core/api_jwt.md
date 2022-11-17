@@ -244,19 +244,27 @@ public class AuthController : Controller
 }
 ```
 
-<br/>在 PermissionController 加入以下 Action
+<br/>增加 AnonymousController，有以下 Action
 ```csharp
+[AllowAnonymous]
 [ApiController]
 [Route("api/[controller]")]
-public class PermissionController : Controller
+public class AnonymousController : Controller
 {
-    [AllowAnonymous]
     [HttpGet, Route("anonymous")]
     public IActionResult Anonymous()
     {
         return Ok("anonymous");
     }
-    
+}
+```
+
+<br/>增加 PermissionController，加入以下 Action
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class PermissionController : Controller
+{
     [Authorize]
     [HttpGet, Route("authorize")]
     public IActionResult Authorize()
@@ -284,25 +292,25 @@ public class PermissionController : Controller
 
 將專案跑 debug mode，把 swagger 開起來
 
-在不帶 token 的情況下去打 ```/api/Permission/anonymous```，可以通過，得到回覆
+在不帶 token 的情況下去打 ```/api/anonymous/anonymous```，可以通過，得到回覆
 >anonymous
 
-<br/>而不帶 token 去打 ```/api/Permission/authorize```, 會得到 http code 401, 代表 Unauthorized
+<br/>而不帶 token 去打 ```/api/permission/authorize```, 會得到 http code 401, 代表 Unauthorized
 
 ### 測試驗 token 內的角色
 
-<br/>如果改帶不含任何角色的 token 去打 ```/api/Permission/authorize```，因為沒限定角色，所以可以通過，得到回覆
+<br/>如果改帶不含任何角色的 token 去打 ```/api/permission/authorize```，因為沒限定角色，所以可以通過，得到回覆
 >authorize
 
 
 帶有 Administrator 的 token 可以打所有 api，都不會被擋
 
-<br/>帶有角色 Teacher 和 Student 的 token 去打 ```/api/Permission/teacher```，可以通過，得到回覆
+<br/>帶有角色 Teacher 和 Student 的 token 去打 ```/api/permission/teacher```，可以通過，得到回覆
 >authorize teacher
 
-<br/>帶有角色 Student 的 token，用 swagger 打 ```/api/Permission/teacher```, 會得到 http code 403, 代表 Forbidden -> 注意不是 401 Unauthorized
+<br/>帶有角色 Student 的 token，用 swagger 打 ```/api/permission/teacher```, 會得到 http code 403, 代表 Forbidden -> 注意不是 401 Unauthorized
 
-<br/>帶有任一角色的 token 去打 ```/api/Permission/authorize```，可以通過，得到回覆
+<br/>帶有任一角色的 token 去打 ```/api/permission/authorize```，可以通過，得到回覆
 >authorize
 
 ---
