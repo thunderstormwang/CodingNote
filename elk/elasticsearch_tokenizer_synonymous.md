@@ -2,6 +2,32 @@
 
 - [ ] 將連結的內容寫成自己的筆記
 
+Elasticsearch 的 analyzer，都由三個 module 組成：character filter、tokenizer、token filter
+
+## character filter
+增加、刪除或修改字元
+
+例如把阿拉伯数字（٠‎١٢٣٤٥٦٧٨‎٩）‎ 轉成 Arabic-Latin 的等價物（0123456789）。
+
+一個 analyzer 可能有 0 個或多個 charcter filter，它們按順序使用。
+
+## tokenizer
+
+將字串分成數個 token，例如，「純喫茶」要被拆成「純」、「喫」、「茶」、「純喫茶」
+
+一個 analyzer 只能有 1 個 tokenizer
+
+## token filter
+
+增加、刪除或修改 token
+
+例如將 token 轉成小寫、增加同義的 token
+
+一個 analyzer 可能有 0 個或多個 tokenizer，它們按順序使用。
+
+<br/>如下圖
+![Elasticsearch 分析器](imgs/elasticsearch_analyzer.png)
+
 ---
 
 ## IK 分詞器
