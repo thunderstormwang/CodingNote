@@ -173,7 +173,7 @@ builder.Services.AddMyTokenAuthentication(configuration);
 
 <br/>如此就可以使用原生的角色驗證方式
 
-不過做到目前為止，還沒有看到公司的專案有在用原生的角色驗證方式，或許是不夠彈性吧，而且 Roles 須傳入字串，不好維護的關係吧。
+不過做到目前為止，還沒有看到在公司的專案有在用原生的角色驗證方式，或許是不夠彈性吧，而且 Roles 須傳入字串，不好維護的關係吧。
 
 比較常看到的設計自己的 Role、Function、Action 的表
 - 定義該帳號有哪些 Role
