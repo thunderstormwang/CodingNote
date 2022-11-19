@@ -1,4 +1,4 @@
-# Sql Server Apply 語法
+# SQL Server Apply 語法
 
 apply 能做與 join 一樣的功能，且能簡化語法
 
