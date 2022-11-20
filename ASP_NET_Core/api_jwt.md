@@ -5,10 +5,23 @@
 使用套件:
 - Microsoft.AspNetCore.Authentication.JwtBearer
 
-todo
-- 如何自訂驗證 token, 例如 bearer 帶芝麻開門也可以過, 方便開發時測試
-- 增加自訂 handler 和自訂回傳內容
 ---
+
+需求：
+
+有以下角色：Administrator、Teacher、Student
+
+各角色以下權限
+
+ | 功能     | 角色                          |
+ |--------|-------------------------------|
+ | 增加帳號 | Administrator                 |
+ | 解鎖帳號 | Administrator                 |
+ | 請假     | Administrator、Teacher、Student |
+ | 設定課程 | Administrator、Teacher         |
+ | 取消課程 | Administrator、Teacher         |
+ | 選修課程 | Administrator、Student         |
+ | 退選課程 | Administrator、Student         |
 
 <br/>增加 AuthSetting Model
 ```csharp
@@ -30,7 +43,7 @@ public enum MyRole
 {
     Administrator = 0,
     Teacher = 1,
-    Student = 2,
+    Student = 2
 }
 ```
 
@@ -225,7 +238,7 @@ public class AuthController : Controller
 }
 ```
 
-<br/>打 ```/api/Auth/Login``` 得到的 token，解出來會像下面的結構
+<br/>打 ``` /api/Auth/Login ``` 得到的 token，解出來會像下面的結構
 ```json
 {
   "sub": "string",
@@ -271,47 +284,83 @@ public class PermissionController : Controller
     {
         return Ok("authorize");
     }
+}
+```
+
+<br/>增加 AdministrativeController，加入以下 Action
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class AdministrativeController : Controller
+{
+    [Authorize(Roles = "Administrator")]
+    [HttpPost, Route("add_account")]
+    public IActionResult AddAccount([FromBody] Course course)
+    {
+        return Ok($"{nameof(AddAccount)} OK");
+    }
     
     [Authorize(Roles = "Administrator")]
-    [HttpGet, Route("administrator")]
-    public IActionResult Administrator()
+    [HttpPost, Route("unfrozen_account")]
+    public IActionResult UnfrozenAccount([FromBody] Course course)
     {
-        return Ok("authorize administrator");
+        return Ok($"{nameof(UnfrozenAccount)} OK");
     }
-
-    [Authorize(Roles = "Administrator,Teacher")]
-    [HttpGet, Route("teacher")]
-    public IActionResult Teacher()
+    
+    [Authorize(Roles = "Administrator,Teacher,Student")]
+    [HttpPost, Route("dayoff")]
+    public IActionResult DayOff([FromBody] Course course)
     {
-        return Ok("authorize teacher");
+        return Ok($"{nameof(DayOff)} OK");
     }
 }
 ```
 
-### 測試只驗有沒有 token
+<br/>增加 CourseController，加入以下 Action
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class CourseController : Controller
+{
+    [Authorize(Roles = "Administrator,Teacher")]
+    [HttpPost, Route("set_course")]
+    public IActionResult SetCourse([FromBody] Course course)
+    {
+        return Ok($"{nameof(SetCourse)} OK");
+    }
+    
+    [Authorize(Roles = "Administrator,Teacher")]
+    [HttpPost, Route("cancel_course")]
+    public IActionResult CancelCourse([FromBody] Course course)
+    {
+        return Ok($"{nameof(CancelCourse)} OK");
+    }
+    
+    [Authorize(Roles = "Administrator,Student")]
+    [HttpPost, Route("major_course")]
+    public IActionResult MajorCourse([FromBody] Course course)
+    {
+        return Ok($"{nameof(MajorCourse)} OK");
+    }
+    
+    [Authorize(Roles = "Administrator,Student")]
+    [HttpPost, Route("withdraw_course")]
+    public IActionResult WithdrawCourse([FromBody] Course course)
+    {
+        return Ok($"{nameof(WithdrawCourse)} OK");
+    }
+}
+```
 
 將專案跑 debug mode，把 swagger 開起來
 
-在不帶 token 的情況下去打 ```/api/anonymous/anonymous```，可以通過，得到回覆
+``` /api/anonymous/anonymous ``` 沒掛驗證 filter，不用帶 token 也可以通過，得到回覆
 >anonymous
 
-<br/>而不帶 token 去打 ```/api/permission/authorize```, 會得到 http code 401, 代表 Unauthorized
-
-### 測試驗 token 內的角色
-
-<br/>如果改帶不含任何角色的 token 去打 ```/api/permission/authorize```，因為沒限定角色，所以可以通過，得到回覆
+<br/>``` /api/permission/authorize ``` 有掛驗證 filter, 不帶 token 的情況下打不通，會得到 http code 401, 代表 Unauthorized，反之只要 token 驗證過，就算該 token 不含任何角色，也可以通過，得到回覆
 >authorize
 
-
-帶有 Administrator 的 token 可以打所有 api，都不會被擋
-
-<br/>帶有角色 Teacher 和 Student 的 token 去打 ```/api/permission/teacher```，可以通過，得到回覆
->authorize teacher
-
-<br/>帶有角色 Student 的 token，用 swagger 打 ```/api/permission/teacher```, 會得到 http code 403, 代表 Forbidden -> 注意不是 401 Unauthorized
-
-<br/>帶有任一角色的 token 去打 ```/api/permission/authorize```，可以通過，得到回覆
->authorize
+<br/>``` /api/administrative/add_acount ``` 有掛驗證 filter, 且限定角色 Administrator，如果 token 裡只有 Teacher 或 Student，就不會通過，會得到 http code 403, 代表 Forbidden -> 注意不是 401 Unauthorized
 
 ---
 
@@ -365,30 +414,30 @@ public class FetchUserInfoAttribute : ActionFilterAttribute
         {
             UserId = context.HttpContext.User.Identity?.Name,
             DisplayName = context.HttpContext.User.Claims.Where(c => c.Type == "display_name").FirstOrDefault()?.Value,
-            Email = context.HttpContext.User.Claims.Where(c => c.Type == JwtRegisteredClaimNames.Email).FirstOrDefault()?.Value,
-            Roles = context.HttpContext.User.Claims.Where(c => c.Type == "role").Select(c => c.Value).ToList()
+            Email = context.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).FirstOrDefault()?.Value,
+            Roles = context.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList()
         };
         context.HttpContext.Items["user_info"] = userInfo;
     }
 }
 ```
 
-<br/>那麼在 Action 內可直接取得 UserInfo
+<br/>在 Action 掛上 FetchUserInfoAttribute，那麼在 Action 內可直接取得 UserInfo
 ```csharp
 [ApiController]
 [Route("api/[controller]")]
 public class CourseController : Controller
 {
-    [Authorize(Roles = "Administrator,Teacher,Student")]
-    [HttpPost, Route("add")]
+    [Authorize(Roles = "Administrator,Teacher")]
+    [HttpPost, Route("set_course")]
     [FetchUserInfo]
-    public IActionResult Add([FromBody] Course course)
+    public IActionResult SetCourse([FromBody] Course course)
     {
         var userInfo = HttpContext.Items["user_info"] as UserInfo;
         var courseService = new CourseService();
         courseService.Add(userInfo, course);
-        
-        return Ok();
+
+        return Ok($"{nameof(SetCourse)} OK");
     }
 }
 ```
