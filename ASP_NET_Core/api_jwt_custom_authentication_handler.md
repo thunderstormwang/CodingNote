@@ -224,56 +224,168 @@ Action {
 }
 ```
 
+<br/>建立 Table 語法
+```sql
+CREATE TABLE [dbo].[MyAccount](
+	[Id] [int] NOT NULL IDENTITY,	
+	[Account] [varchar](250) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+INSERT [dbo].[MyAccount] ([Account]) VALUES (N'Curator'),
+	(N'Mary'),
+	(N'John')
+GO
+
+CREATE TABLE [dbo].[MyRole](
+	[Id] [int] NOT NULL,	
+	[Name] [nvarchar](250) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+INSERT [dbo].[MyRole] ([Id], [Name]) VALUES (1, N'Administrator'),
+	(2, N'Teacher'),
+	(3, N'Student')
+GO
+
+CREATE TABLE [dbo].[MyFunction](
+	[Id] [int] NOT NULL,
+	[Name] [nvarchar](250) NOT NULL,
+	[Layer] int NOT NULL,
+	[UpperFunctionId] int NOT NULL	
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+INSERT [dbo].[MyFunction] ([Id], [Name], [Layer], [UpperFunctionId]) VALUES (1, N'行政', 1, 0), 
+	(2, N'增加帳號', 2, 1),
+	(3, N'解鎖帳號', 2, 1),
+	(4, N'請假', 2, 1),
+	(5, N'課程', 1, 0),
+	(6, N'設定課程', 2, 5),
+	(7, N'取消課程', 2, 5),
+	(8, N'加修課程', 2, 5),
+	(9, N'退選課程', 2, 5)
+GO
+
+CREATE TABLE [dbo].[MyAction](
+	[Id] [int] NOT NULL,
+	[Name] [nvarchar](250) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+INSERT [dbo].[MyAction] ([Id], [Name]) VALUES (1, N'全部'), 
+	(2, N'新增'),
+	(3, N'編輯'),
+	(4, N'刪除'),
+	(5, N'查詢'),
+	(6, N'審核')
+GO
+
+CREATE TABLE [dbo].[MyAccountRole](
+	[Id] [int] NOT NULL IDENTITY,	
+	[AccountId] [int] NOT NULL,
+	[RoleId] [int] NOT NULL
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+INSERT [dbo].[MyAccountRole] ([AccountId], [RoleId]) VALUES (1, 1),
+	(2, 2),
+	(3, 3)
+GO
+
+CREATE TABLE [dbo].[MyRoleFunction](
+	[Id] [int] NOT NULL IDENTITY,		
+	[RoleId] [int] NOT NULL,
+	[FunctionId] [int] NOT NULL,
+	[ActionId] [int] NOT NULL
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+INSERT [dbo].[MyRoleFunction] ([RoleId], [FunctionId], [ActionId]) VALUES (1, 2, 1),
+	(1, 3, 1),
+	(1, 4, 1),
+	(1, 6, 1),
+	(1, 7, 1),
+	(1, 8, 1),
+	(1, 9, 1),
+	(2, 4, 1),
+	(2, 6, 1),
+	(2, 7, 1),
+	(3, 4, 1),
+	(3, 8, 1),
+	(3, 9, 1)
+GO
+
+
+```
+
 <br/>就可以用以下的 sql 撈出該帳號擁有的角色和功能
 ```sql
-DECLARE @account NVARCHAR = 'test'
+DECLARE @account VARCHAR(250) = 'John'
 
-SELECT t.Account,
+SELECT a.Account,
        rf.RoleId,
        r.Name AS 'RoleName',
        rf.id  AS 'RoleFunctionId',
        rf.FunctionId,
        f.UpperFunctionId,
        f.Name AS 'FunctionName',
-       action.Name AS 'ActionName'
-FROM RoleFunction rf
-         JOIN Action action
+	   action.Name AS 'ActionName'
+FROM MyRoleFunction rf
+		JOIN MyAction action
               ON rf.ActionId = action.Id
-         JOIN Function f
+         JOIN MyFunction f
               ON rf.FunctionId = f.Id
-         JOIN AccountRole ar
+         JOIN MyAccountRole ar
               ON rf.RoleId = ar.RoleId
-         JOIN Role r
+         JOIN MyRole r
               ON ar.RoleId = r.Id
-         JOIN Account a
-              ON ar.MemberId = a.Id;
+         JOIN MyAccount a
+              ON ar.AccountId = a.Id
 WHERE a.Account = @account
 ```
 
 <br/>再以下的 sql 撈出該帳號擁有的選單列表
 ```sql
-DECLARE @account NVARCHAR = 'test'
+DECLARE @account NVARCHAR(250) = 'Mary';
 
 WITH MenuCTE(Account, Id, Layer, UpperFunctionId, Name) AS
          (SELECT a.Account, f.Id, f.Layer, f.UpperFunctionId, f.Name
-          FROM Function f
-                   JOIN RoleFunction rf
+          FROM MyFunction f
+                   JOIN MyRoleFunction rf
                         ON f.Id = rf.FunctionId
-                   JOIN AccountRole ar
+                   JOIN MyAccountRole ar
                         ON rf.RoleId = ar.RoleId
-				   JOIN Account a
-   				        ON ar.MemberId = a.Id;
+				   JOIN MyAccount a
+   				        ON ar.AccountId = a.Id
 		  WHERE a.Account = @account
           UNION ALL
           SELECT a.Account, f.Id, f.Layer, f.UpperFunctionId, f.Name
-          FROM Function AS f
-                   JOIN Account a
+          FROM MyFunction AS f
+                   JOIN MyAccount a
                         ON a.Account = @account
-                   INNER JOIN ScmFuncCTE AS sfCTE
-                              ON f.Id = sfCTE.UpperFunctionId)
+                   INNER JOIN MenuCTE AS mc
+                              ON f.Id = mc.UpperFunctionId)
 SELECT DISTINCT Account, Id AS FunctionId, Layer, UpperFunctionId, Name
 FROM MenuCTE;
-
 ```
 
 todo 加上範例 code，在 action 上掛 filter, 檢查符合 Function, Action 的用戶才可使用
