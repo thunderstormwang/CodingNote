@@ -6,6 +6,8 @@
 - 設計在開發期間方便測試的後門
 - 想改變驗證不過的回傳訊息
 
+## 自訂 Authentication handler
+
 定義自己的 Authentication Handler
 ```csharp
 public class MyAuthHandler : AuthenticationHandler<MyAuthenticationSchemeOptions>
@@ -173,6 +175,14 @@ builder.Services.AddMyTokenAuthentication(configuration);
 
 <br/>如此就可以使用原生的角色驗證方式
 
+想改寫回傳值可在 MyAuthHandler 內修改
+
+在 header 裡帶上 ``` Backdoor: Wakanda Forever ``` 也可以存取任何 Action
+
+---
+
+## 自訂權限表
+
 不過做到目前為止，還沒有看到在公司的專案有在用原生的角色驗證方式，或許是不夠彈性吧，而且 Roles 須傳入字串，不好維護的關係吧。
 
 比較常看到的設計自己的 Role、Function、Action 的表
@@ -180,8 +190,6 @@ builder.Services.AddMyTokenAuthentication(configuration);
 - 該 Role 有哪些 Function 
 - 該 Role 在這個 Function 有哪些 Action，例如全部、新增、編輯、刪除、查詢、審核
 - 以上述表格產出該帳號能看到的選單
-
-todo 底下待 review
 
 <br/>例如設計以下的 DB 關連
 ```mermaid
@@ -224,7 +232,7 @@ Action {
 }
 ```
 
-<br/>建立 Table 語法
+<br/>建立帳號 Table 語法
 ```sql
 CREATE TABLE [dbo].[MyAccount](
 	[Id] [int] NOT NULL IDENTITY,	
@@ -239,7 +247,10 @@ INSERT [dbo].[MyAccount] ([Account]) VALUES (N'Curator'),
 	(N'Mary'),
 	(N'John')
 GO
+```
 
+<br/>建立權限 Table 語法
+```sql
 CREATE TABLE [dbo].[MyRole](
 	[Id] [int] NOT NULL,	
 	[Name] [nvarchar](250) NOT NULL,
@@ -292,7 +303,10 @@ INSERT [dbo].[MyAction] ([Id], [Name]) VALUES (1, N'全部'),
 	(5, N'查詢'),
 	(6, N'審核')
 GO
+```
 
+<br/>建立權限對應表 Table 語法
+```sql
 CREATE TABLE [dbo].[MyAccountRole](
 	[Id] [int] NOT NULL IDENTITY,	
 	[AccountId] [int] NOT NULL,
@@ -333,13 +347,11 @@ INSERT [dbo].[MyRoleFunction] ([RoleId], [FunctionId], [ActionId]) VALUES (1, 2,
 	(3, 8, 1),
 	(3, 9, 1)
 GO
-
-
 ```
 
 <br/>就可以用以下的 sql 撈出該帳號擁有的角色和功能
 ```sql
-DECLARE @account VARCHAR(250) = 'John'
+DECLARE @account VARCHAR(250) = 'John';
 
 SELECT a.Account,
        rf.RoleId,
@@ -362,6 +374,15 @@ FROM MyRoleFunction rf
               ON ar.AccountId = a.Id
 WHERE a.Account = @account
 ```
+
+Administrator 權限<br/>
+![Administrator 權限](imgs/admin_permission.png)
+
+Teacher 權限<br/>
+![Teacher 權限](imgs/teacher_permission.png)
+
+Student 權限<br/>
+![Student 權限](imgs/student_permission.png)
 
 <br/>再以下的 sql 撈出該帳號擁有的選單列表
 ```sql
@@ -388,4 +409,170 @@ SELECT DISTINCT Account, Id AS FunctionId, Layer, UpperFunctionId, Name
 FROM MenuCTE;
 ```
 
-todo 加上範例 code，在 action 上掛 filter, 檢查符合 Function, Action 的用戶才可使用
+Administrator 選單<br/>
+![Administrator 選單](imgs/admin_menu.png)
+
+Teacher 選單<br/>
+![Teacher 選單](imgs/teacher_menu.png)
+
+Student 選單<br/>
+![Student 選單](imgs/student_menu.png)
+
+<br/>修改 UserInfo model
+```
+public class UserInfo
+{
+    public string UserId { get; set; }
+    public string DisplayName { get; set; }
+    public string Email { get; set; }
+    public List<string> Roles { get; set; }
+    public Dictionary<MyFunction, MyAction[]> FunctionDict;
+}
+```
+
+<br/>修改 JwtHelper，修改將角色、權限表放入 token 的方式，
+```csharp
+public class JwtHelper
+{
+    private readonly AuthSetting _authSetting;
+
+    public JwtHelper(IConfiguration config)
+    {
+        _authSetting = config.GetSection("AuthSetting").Get<AuthSetting>();
+    }
+    
+    public string GenerateSecurityToken(int userId, string userDisplayName, string email, List<MyRole> roles,
+        Dictionary<MyFunction, MyAction[]> functionDict)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.ASCII.GetBytes(_authSetting.Secret);
+
+        var claims = new List<Claim>()
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
+            new Claim("display_name", userDisplayName),
+            new Claim(JwtRegisteredClaimNames.Iss, _authSetting.Issuer),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(ClaimTypes.Email, email),
+            new Claim(ClaimTypes.Role, JsonSerializer.Serialize(roles)),
+            new Claim("function", JsonSerializer.Serialize(functionDict)),
+        };
+        
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(claims.ToArray()),
+            Audience = _authSetting.Audience,
+            Expires = DateTime.UtcNow.AddMinutes(_authSetting.ExpirationInMinutes),
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+        };
+
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+
+        return tokenHandler.WriteToken(token);
+    }
+}
+```
+
+<br/>因為放 token 的方式變了，FetchUserInfoAttribute 也須修改
+```
+public class FetchUserInfo2Attribute : ActionFilterAttribute
+{
+    /// <inheritdoc />
+    public override void OnActionExecuting(ActionExecutingContext context)
+    {
+        if (!context.HttpContext.User.Identity.IsAuthenticated)
+        {
+            return;
+        }
+        
+        var userInfo = new UserInfo2()
+        {
+            UserId = context.HttpContext.User.Identity?.Name,
+            DisplayName = context.HttpContext.User.Claims.Where(c => c.Type == "display_name").FirstOrDefault()?.Value,
+            Email = context.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).FirstOrDefault()?.Value,
+            Roles = context.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList(),
+            FunctionDict = JsonSerializer.Deserialize<Dictionary<MyFunction, MyAction[]>>(context.HttpContext.User.Claims.Where(c => c.Type == "function").FirstOrDefault()?.Value)
+        };
+        context.HttpContext.Items["user_info"] = userInfo;
+    }
+}
+```
+
+<br/>增加 MyPermissionAttribute，從 token 取出權限表並做驗證
+```csharp
+public class MyPermissionAttribute : AuthorizeAttribute, IAuthorizationFilter
+{
+     private readonly MyFunction _functionEnum;
+     private readonly MyAction[] _actionEnums;
+     
+     public MyPermissionAttribute(MyFunction functionEnum, MyAction[] actionEnums)
+     {
+          _functionEnum = functionEnum;
+          _actionEnums = actionEnums;
+     }
+     
+     /// <inheritdoc />
+     public void OnAuthorization(AuthorizationFilterContext context)
+     {
+          var userFunctionDict = JsonSerializer.Deserialize<Dictionary<MyFunction, MyAction[]>>(context.HttpContext.User.Claims.Where(c => c.Type == "function").FirstOrDefault()?.Value);
+          
+          if (userFunctionDict == null)
+          {
+               context.Result = new MyMethodNotAllowedResult();
+               return;
+          }
+
+          if (!userFunctionDict.ContainsKey(_functionEnum))
+          {
+               context.Result = new MyMethodNotAllowedResult();
+               return;
+          }
+          
+          var userActions = userFunctionDict[_functionEnum];
+          if (!userActions.Any(u => _actionEnums.Contains(u)))
+          {
+               context.Result = new MyMethodNotAllowedResult();
+               return;
+          }
+          
+          // 符合權限
+          return;
+     }
+}
+
+/// <summary>
+/// A <see cref="StatusCodeResult"/> that when
+/// executed will produce a Bad Request (405) response.
+/// </summary>
+[DefaultStatusCode(DefaultStatusCode)]
+public class MyMethodNotAllowedResult : StatusCodeResult
+{
+     private const int DefaultStatusCode = StatusCodes.Status405MethodNotAllowed;
+
+     /// <summary>
+     /// Creates a new <see cref="MyMethodNotAllowedResult"/> instance.
+     /// </summary>
+     public MyMethodNotAllowedResult()
+          : base(DefaultStatusCode)
+     {
+     }
+}
+```
+
+<br/>加入 FetchUserInfoAttribute，解析 token 並將資料放進 HttpContext.Items，如此就可供同個 request 做後續使用
+```csharp
+public class FetchUserInfoAttribute : ActionFilterAttribute
+{
+    [MyPermission(MyFunction.SetCourse, new MyAction[] { MyAction.All })]
+    [HttpPost, Route("set_course")]
+    [FetchUserInfo]
+    public IActionResult SetCourse([FromBody] Course course)
+    {
+        var userInfo = HttpContext.Items["user_info"] as UserInfo;
+        var courseService = new CourseService();
+        courseService.Add(userInfo, course);
+        
+        return Ok($"{nameof(SetCourse)} OK");
+    }
+}
+```
