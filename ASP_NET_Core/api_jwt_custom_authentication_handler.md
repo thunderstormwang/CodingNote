@@ -171,11 +171,7 @@ builder.Services.AddControllers();
 builder.Services.AddMyTokenAuthentication(configuration);
 ```
 
----
-
-<br/>如此就可以使用原生的角色驗證方式
-
-想改寫回傳值可在 MyAuthHandler 內修改
+<br/>如此就可以使用原生的角色驗證方式，想改寫回傳值可在 MyAuthHandler 內修改
 
 在 header 裡帶上 ``` Backdoor: Wakanda Forever ``` 也可以存取任何 Action
 
@@ -183,9 +179,11 @@ builder.Services.AddMyTokenAuthentication(configuration);
 
 ## 自訂權限表
 
-不過做到目前為止，還沒有看到在公司的專案有在用原生的角色驗證方式，或許是不夠彈性吧，而且 Roles 須傳入字串，不好維護的關係吧。
+不過做到目前為止，還沒有在公司的專案看到有在用原生的角色驗證方式，猜想是以下原因：
+- Roles 須傳入字串，不好維護的關係
+- 不好盤點某 Role 有什麼權限，也就不好動態產生選單
 
-比較常看到的設計自己的 Role、Function、Action 的表
+比較常看到的設計自己的 Role、Function、Action 的資料表
 - 定義該帳號有哪些 Role
 - 該 Role 有哪些 Function 
 - 該 Role 在這個 Function 有哪些 Action，例如全部、新增、編輯、刪除、查詢、審核
@@ -576,3 +574,7 @@ public class FetchUserInfoAttribute : ActionFilterAttribute
     }
 }
 ```
+
+這樣的做法會讓權限設定移到 DB 資料表，也讓 jwt 的長度變長(雖然可以有 4K 的長度)。如果想讓 jwt 只帶角色，又想在 DB 設定權限表，就要讓服務在驗證權限時去讀取 DB。
+
+若再進一步為了效能考量，可將 DB 的權限表放入記憶體或 Redis，也想要更新機制，例如定時更新 Redis 的權限表、更新某個角色的權限表後，要使所有含有該角色的帳號皆使用新設定。越想越麻煩...
