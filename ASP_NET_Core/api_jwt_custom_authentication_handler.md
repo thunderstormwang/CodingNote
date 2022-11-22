@@ -27,7 +27,7 @@ public class MyAuthHandler : AuthenticationHandler<MyAuthenticationSchemeOptions
         // 塞入後門 token
         _backdoorClaims = new List<Claim>()
         {
-            new Claim("iss", _authSetting.Issuer),
+            new Claim(JwtRegisteredClaimNames.Iss, _authSetting.Issuer),
             new Claim(JwtRegisteredClaimNames.Sub, "9999"),
             new Claim("role", MyRole.Administrator.ToString()),
             new Claim("role", MyRole.Teacher.ToString()),
@@ -169,6 +169,30 @@ var configuration = builder.Configuration;
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddMyTokenAuthentication(configuration);
+```
+
+修改 FetchUserInfoAttribute，取 token 內資料的方式有點不一樣
+```csharp
+public class FetchUserInfoAttribute : ActionFilterAttribute
+{
+    /// <inheritdoc />
+    public override void OnActionExecuting(ActionExecutingContext context)
+    {
+        if (!context.HttpContext.User.Identity.IsAuthenticated)
+        {
+            return;
+        }
+        
+        var userInfo = new UserInfo()
+        {
+            UserId = context.HttpContext.User.Identity?.Name,
+            DisplayName = context.HttpContext.User.Claims.Where(c => c.Type == "display_name").FirstOrDefault()?.Value,
+            Email = context.HttpContext.User.Claims.Where(c => c.Type == JwtRegisteredClaimNames.Email).FirstOrDefault()?.Value,
+            Roles = context.HttpContext.User.Claims.Where(c => c.Type == "role").Select(c => c.Value).ToList()
+        };
+        context.HttpContext.Items["user_info"] = userInfo;
+    }
+}
 ```
 
 <br/>如此就可以使用原生的角色驗證方式，想改寫回傳值可在 MyAuthHandler 內修改
@@ -451,8 +475,8 @@ public class JwtHelper
             new Claim("display_name", userDisplayName),
             new Claim(JwtRegisteredClaimNames.Iss, _authSetting.Issuer),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.Email, email),
-            new Claim(ClaimTypes.Role, JsonSerializer.Serialize(roles)),
+            new Claim(JwtRegisteredClaimNames.Email, email),
+            new Claim("role", JsonSerializer.Serialize(roles)),
             new Claim("function", JsonSerializer.Serialize(functionDict)),
         };
         
@@ -472,7 +496,7 @@ public class JwtHelper
 ```
 
 <br/>因為放 token 的方式變了，FetchUserInfoAttribute 也須修改
-```
+```csharp
 public class FetchUserInfo2Attribute : ActionFilterAttribute
 {
     /// <inheritdoc />
@@ -487,8 +511,8 @@ public class FetchUserInfo2Attribute : ActionFilterAttribute
         {
             UserId = context.HttpContext.User.Identity?.Name,
             DisplayName = context.HttpContext.User.Claims.Where(c => c.Type == "display_name").FirstOrDefault()?.Value,
-            Email = context.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).FirstOrDefault()?.Value,
-            Roles = context.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList(),
+            Email = context.HttpContext.User.Claims.Where(c => c.Type == JwtRegisteredClaimNames.Email).FirstOrDefault()?.Value,
+            Roles = context.HttpContext.User.Claims.Where(c => c.Type == "role").Select(c => c.Value).ToList(),
             FunctionDict = JsonSerializer.Deserialize<Dictionary<MyFunction, MyAction[]>>(context.HttpContext.User.Claims.Where(c => c.Type == "function").FirstOrDefault()?.Value)
         };
         context.HttpContext.Items["user_info"] = userInfo;
@@ -578,3 +602,9 @@ public class FetchUserInfoAttribute : ActionFilterAttribute
 這樣的做法會讓權限設定移到 DB 資料表，也讓 jwt 的長度變長(雖然可以有 4K 的長度)。如果想讓 jwt 只帶角色，又想在 DB 設定權限表，就要讓服務在驗證權限時去讀取 DB。
 
 若再進一步為了效能考量，不想每次檢查權限時都去讀 DB 的權限表，那就把權限表放入記憶體或 Redis，也要想更新機制，例如定時更新 Redis 的權限表、更新某個角色的權限表後，要使所有含有該角色的帳號皆使用新設定。越想越麻煩...
+
+---
+
+參考自
+- [Authentication handler in ASP.Net Core (JWT and Custom)](https://dotnetcorecentral.com/blog/authentication-handler-in-asp-net-core/)
+- [[.NET Core] 自訂 Authentication handler ](https://blog.kevinyang.net/2022/06/11/aspnet-custom-authSchema/)

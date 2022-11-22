@@ -71,10 +71,10 @@ public class JwtHelper
             new Claim("display_name", userDisplayName),
             new Claim(JwtRegisteredClaimNames.Iss, _authSetting.Issuer),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.Email, email)
+            new Claim(JwtRegisteredClaimNames.Email, email)
         };
         // 塞入角色
-        claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r.ToString())));
+        claims.AddRange(roles.Select(r => new Claim("role", r.ToString())));
         
         var tokenDescriptor = new SecurityTokenDescriptor
         {
@@ -152,7 +152,7 @@ builder.Services.AddControllers();
 builder.Services.AddTokenAuthentication(configuration);
 ```
 
-<br/>呼叫 app.UseAuthentication();
+<br/>呼叫 app.UseAuthentication()，注意順序很重要，要先驗證才能驗權限
 ```csharp
 app.UseHttpsRedirection();
 
