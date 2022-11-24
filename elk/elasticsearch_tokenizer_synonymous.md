@@ -27,6 +27,21 @@ Elasticsearch 的 analyzer，都由三個 module 組成：character filter、tok
 
 <br/>如下圖
 ![Elasticsearch 分析器](imgs/elasticsearch_analyzer.png)
+---
+
+<br/>指定特定 index 的特定 document 的特定欄位，確認會被拆成什麼詞，
+```json
+GET {index_name}}/_termvectors/{id}}
+{
+  "fields": ["{your_column_name}", "{your_column_name2}"],
+  "offsets" : false,
+  "payloads" : false,
+  "positions" : false,
+  "term_statistics" : true,
+  "field_statistics" : true
+}
+
+```
 
 ---
 
