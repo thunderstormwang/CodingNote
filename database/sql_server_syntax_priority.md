@@ -1,4 +1,4 @@
-# SQL 語法優先權
+# SQL Server 語法優先權
 
 1. From
 2. Where
