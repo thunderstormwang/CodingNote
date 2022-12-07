@@ -30,8 +30,24 @@ public class Test
         
         Func<Task> func = async () => { await target.Method(); };
         
-        func.Should().Throw<Exception>()
-            .Where(e => e.Message == "Hello");
+        func.Should().Throw<Exception>().Where(e => e.Message == "Hello")
+            .ConfigureAwait(false).GetAwaiter().GetResult();
+    }
+}
+```
+或是這樣寫
+```csharp
+[TestFixture]
+public class Test
+{
+    [Test]
+    public async Task MethodTest()
+    {
+        var target = new Target();
+        
+        Func<Task> func = async () => { await target.Method(); };
+        
+        await func.Should().Throw<Exception>().Where(e => e.Message == "Hello");
     }
 }
 ```
