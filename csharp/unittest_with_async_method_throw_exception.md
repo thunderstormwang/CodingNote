@@ -30,7 +30,7 @@ public class Test
         
         Func<Task> func = async () => { await target.Method(); };
         
-        func.Should().Throw<Exception>().Where(e => e.Message == "Hello")
+        func.Should().ThrowAsync<Exception>().Where(e => e.Message == "Hello")
             .ConfigureAwait(false).GetAwaiter().GetResult();
     }
 }
@@ -47,7 +47,7 @@ public class Test
         
         Func<Task> func = async () => { await target.Method(); };
         
-        await func.Should().Throw<Exception>().Where(e => e.Message == "Hello");
+        await func.Should().ThrowAsync<Exception>().Where(e => e.Message == "Hello");
     }
 }
 ```
