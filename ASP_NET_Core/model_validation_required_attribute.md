@@ -36,7 +36,7 @@ public class Person
 }
 ```
 但是在 .Net Core 6.0 後會得到錯誤訊息
-> The Name field is required."
+> The Name field is required.
 
 這是因為 .net core 6.0 的 csproj 檔案預設是有這行的 ``` <Nullable>enable</Nullable> ```，預設 reference type 也要有值
 
