@@ -1,12 +1,14 @@
 # SQL Server Apply 語法
 
-apply 能做與 join 一樣的功能，且能簡化語法
+apply 能做與 join 一樣的功能，且能簡化語法  
+cross apply 類似 inner join  
+outer apply 類似 left join  
 
-cross apply 類似 inner join
+使用 join 時，會將兩張表中符合條件的行進行組合，形成一個虛擬表，這個虛擬表包含兩張表中符合條件的行，這個操作只需進行一次
 
-outer apply 類似 left join
-
-使用 apply 運算子，母查詢的每一 row 都會讓子查詢跑一次，若為 cross apply 則只有子查詢有符合條件時才會列出對應的母查詢，若為 outer apply 則即使子查詢有不符合條件也會列出對應的母查詢。
+使用 apply 運算子，母查詢的每一行都會讓子查詢跑一次，將子查詢的結果連接到母查詢的每一行。  
+若為 cross apply 則只有子查詢有符合條件時才會列出對應的母查詢，  
+若為 outer apply 則即使子查詢有不符合條件也會列出對應的母查詢。
 
 apply 可用在 table valued function，但 join 不行
 
@@ -117,6 +119,7 @@ left join 和 outer apply 的結果<br/>
 ![left join 和 outer apply 的結果](imgs/left_join_and_outer_apply.png)
 
 <br/>如果需求改成列出該部門年紀最大的 2 位員工，並排除沒有員工的部門，那用 join 會變得複雜些，相較之下，cross apply 顯示得較簡單
+<br/>如果資料量超過百萬，那麼用 apply 較好，因為有先做篩選，而 Join 則是所有行都組合起來才做篩選
 
 ```sql
 SELECT D.DepartmentId, 
