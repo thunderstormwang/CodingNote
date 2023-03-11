@@ -1,4 +1,4 @@
-# SQL Server Apply 語法
+# SQL Server Join 語法
 
 使用以下腳本建立 table 和初始資料
 ```sql
