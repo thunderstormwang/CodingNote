@@ -1,4 +1,4 @@
-# foreach 迴圈 和 Linq 的 ForEach 的差別
+# [C#]foreach 迴圈 和 Linq 的 ForEach 的差別
 
 - foreach 迴圈是基本的語言結構，而 Linq 的 ForEach 是擴充方法
 - foreach 在逐一巡覽元素時，不能改變元素，而 ForEach 可以
