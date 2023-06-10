@@ -1,4 +1,4 @@
-# 查詢索引 Check Index 
+# SQL Server 查詢索引
 
 列出該索引包含的 index key
 ```sql
