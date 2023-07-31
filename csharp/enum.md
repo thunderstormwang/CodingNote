@@ -1,8 +1,8 @@
 # [C#]enum type
 
-- [[C#]enum type](#cenum-type)
+- [\[C#\]enum type](#cenum-type)
   - [string, enum conversion](#string-enum-conversion)
-  - [列舉, 數字轉換](#列舉-數字轉換)
+  - [列舉、數字轉換](#列舉數字轉換)
   - [列出所有名稱](#列出所有名稱)
   - [列出所有值](#列出所有值)
   - [搭配 attribute 實作回傳代碼](#搭配-attribute-實作回傳代碼)
@@ -49,7 +49,7 @@ catch (Exception ex)
 > Error when Enum.Parse: 找不到要求的值 'Orange'。
 ---
 
-## 列舉, 數字轉換
+## 列舉、數字轉換
 將列舉轉為數字
 ```csharp
 Console.WriteLine($"Enum to Int: {(int)Color.Green}");
@@ -69,12 +69,13 @@ color = (Color)100;
 Console.WriteLine($"Int(100) to Enum: {color}");
 ```
 > Int(100) to Enum: 100
+
 ---
 
 ## 列出所有名稱
 列出所有名稱
 ```csharp
-foreach (var item in  Enum.GetNames(typeof(Color)))
+foreach (var item in Enum.GetNames(typeof(Color)))
 {
     Console.WriteLine($"Enum Name: {item}");
 }
@@ -82,6 +83,7 @@ foreach (var item in  Enum.GetNames(typeof(Color)))
 > Enum Name: Red
 <br/>Enum Name: Green
 <br/>Enum Name: Blue
+
 ---
 
 ## 列出所有值
@@ -106,6 +108,7 @@ foreach (var item in EnumUtil.GetValues<Color>())
 > Enum Value: 0
 <br/>Enum Value: 1
 <br/>Enum Value: 2
+
 ---
 
 ## 搭配 attribute 實作回傳代碼
