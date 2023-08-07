@@ -19,7 +19,7 @@ C# 程式碼
 public Main()
 {
     var nums = new int [] { 3, 2, 1, 5, 6, 4 };
-    MergeSort(nums, 0, nums.Length - 1);
+    MergeSort(nums);
 }
 
 private void MergeSort(int[] nums)
