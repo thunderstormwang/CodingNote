@@ -11,7 +11,7 @@
 不需要額外的空間  
 如果陣列中有兩個相同的值，排序後不能保證跟排序前的順序一致
 
-![quick sort](./imgs/quicksort.png)
+![quick sort](./imgs/quick_sort.png)
 
 C# 程式碼  
 寫的時候要注意陣列有無超過邊界  

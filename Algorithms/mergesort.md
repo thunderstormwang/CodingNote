@@ -12,7 +12,7 @@
 時間複雜度固定為 O(n * log(n))  
 需要額外的空間  
 
-![merge sort](./imgs/mergesort.png)
+![merge sort](./imgs/merge_sort.png)
 
 C# 程式碼  
 ```csharp
