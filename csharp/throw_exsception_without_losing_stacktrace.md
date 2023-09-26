@@ -50,7 +50,7 @@ try
 {
     try
     {
-        // stack trace 記不到這行, 也沒記到真正除以 0 的行數
+        // stack trace 記不到這行
         DevideByZero();
     }
     catch(Exception ex)
@@ -63,6 +63,14 @@ catch(Exception ex)
 {
     Console.WriteLine(ex.ToString());
 }
+
+public int DevideByZero()
+{
+    int a = 500;
+    int b = 0;
+    // stack trace 也沒記到真正除以 0 的行數
+    return a / b;
+}
 ```
 
 ### throw
@@ -72,18 +80,26 @@ try
 {
     try
     {
-        // stack trace 沒記到這行, 但有記到真正除以 0 的行數
+        // stack trace 沒記到這行
         DevideByZero();
     }
     catch(Exception ex)
     {
-        // stack trace 只記到這行
+        // stack trace 有記到這行
         throw;
     }
 }
 catch(Exception ex)
 {
     Console.WriteLine(ex.ToString());
+}
+
+public int DevideByZero()
+{
+    int a = 500;
+    int b = 0;
+    // stack trace 有記到真正除以 0 的行數
+    return a / b;
 }
 ```
 
@@ -94,17 +110,25 @@ try
 {
     try
     {
-        // stack trace 有記到這行, 也有記到真正除以 0 的行數
+        // stack trace 有記到這行
         DevideByZero();
     }
     catch(Exception ex)
     {
-        // stack trace 只記到這行
+        // stack trace 有記到這行
         throw new Exception("Additional Information", ex);
     }
 }
 catch(Exception ex)
 {
     Console.WriteLine(ex.ToString());
+}
+
+public int DevideByZero()
+{
+    int a = 500;
+    int b = 0;
+    // stack trace 有記到真正除以 0 的行數
+    return a / b;
 }
 ```
