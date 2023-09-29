@@ -34,7 +34,8 @@ public class Person : IValidatableObject
     {
         if (string.IsNullOrEmpty(Email) && string.IsNullOrEmpty(Phone))
         {
-            yield return new ValidationResult($"At least one of Email, Phone is required.");
+            yield return new ValidationResult( $"At least one of Email, Phone is required.", 
+                new List<string>() { $"{nameof(Email)}", $"{nameof(Phone)}" });
         }
     }
 }
