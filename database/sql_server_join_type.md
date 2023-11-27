@@ -17,7 +17,7 @@
 - 在大型 Table 且已依照 join 條件排序過時，此方法會很有效率
 - 在 join 條件也須使用 等號
 - 兩個 Table 各有個指針從第一個資料列開始比較，因為已排序過，當兩邊資料不相符時，就移動資料較小的指針。
-- 因為需要排序，所以會耗費較多資源。
+- 因為可能需要排序，所以會耗費較多資源。
 
 ## Hash Match
 - Complexity: O(N * hc + M * hm + J) or O(N + M) if you ignore resource consumption costs
