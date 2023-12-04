@@ -148,7 +148,7 @@ dyn = "10";
 dyn = dyn + 10;
 ```
 
-### 函式
+### 用在函式的參數
 ```csharp
 public static void Print(string arg)
 {
@@ -176,7 +176,7 @@ Print(dyn);
 ```csharp
 object obj = 10;
 
-// Doesn't compile.
+// compiler error.
 //Print(obj);
 
 // Compiles, but there is an exception at run time.
