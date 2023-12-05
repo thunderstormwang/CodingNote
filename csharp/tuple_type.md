@@ -2,7 +2,7 @@
 
 參考自 MSDN [Tuple types](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/value-tuples)
 
-想在函式傳回多個回傳值在 .Net 4.0 之前有2種方式：
+想在函式傳回多個回傳值在 .Net 4.0 之前有 2 種方式：
 - 宣告一個 Class，將所有佪傳值放進此 Class
 - 在參數前面使用 out 或 ref 關鍵字
 
@@ -11,7 +11,7 @@
 - 有些回傳值不適合放在同一個 Class 裡，例如當一個 Class 被取名叫 BookInfo，裡面不太適合放入人名的資訊
 
 使用 out 或 ref 可能遇到幾個問題
-- 回傳值太多，造成函式的參數數目太多
+- 回傳值太多，造成函式的參數數目太多，不易閱讀
 
 .Net 4.0 之後提供另一種選擇， Tuple 類型，是 Value Type，如下圖用 Item1, Item2 取回傳值
 
@@ -26,7 +26,6 @@ public static (string, int) GetInfo()
 var result = GetInfo();
 Console.WriteLine("Name: {0}, Age: {1}", result.Item1, result.Item2);
 ```
-
 >Name: David, Age: 40
 
 
@@ -46,7 +45,6 @@ Console.WriteLine("Name: {0}, Age: {1}", result.Item1, result.Item2);
 GetInfo(ref result);
 Console.WriteLine("Name: {0}, Age: {1}", result.Item1, result.Item2);
 ```
-
 >Name: AAA, Age: 3  
 Name: David, Age: 40
 
@@ -85,9 +83,7 @@ public static (string Name, int Age) GetInfo()
 var result = GetInfo();
 Console.WriteLine("Name: {0}, Age: {1}", result.Name, result.Age);
 ```
-
 >Name: David, Age: 40
-
 
 C# Tuple 是由類型所支援 System.ValueTuple ，與以類型表示的 System.Tuple Tuple 不同。 主要差異如下：
 - System.ValueTuple 類型是 實值型別 。 System.Tuple 類型是 參考型別 。
