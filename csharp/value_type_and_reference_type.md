@@ -15,4 +15,7 @@ string, array, class, delegate，都是 Reference Type
 下圖說明了 Value Type 和 Reference Type 的差異  
 ![Value Type & Reference Type](imgs/value_type_and_reference_type.png)
 
+boxing_and_unboxing.md
+
+[[C#]Boxing & Unboxing](equality_operator.md)  
 [[C#]== Operator - Equality operator](equality_operator.md)
