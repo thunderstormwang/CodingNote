@@ -1,4 +1,4 @@
-[C#] Tuple 類型
+# [C#]Tuple 類型
 
 參考自 MSDN [Tuple types](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/value-tuples)
 
