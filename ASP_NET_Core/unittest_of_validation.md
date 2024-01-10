@@ -3,7 +3,7 @@
 使用平台: .Net Core 7.0
 
 使用套件:
-- FluentValidation
+- FluentAssertions
 - NUnit
 
 一個這樣的 model 驗證
