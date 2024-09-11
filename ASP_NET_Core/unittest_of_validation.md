@@ -21,22 +21,20 @@ public class Person
 可以這樣寫單元測試
 
 ```csharp
-    public void TestMethod()
+public void TestMethod()
+{
+    var request = new Person()
     {
-        var request = new Person()
-        {
-            Name = null,
-            Age = 20
-        };
-        
-        var actual = new List<ValidationResult>();
-        var ctx = new ValidationContext(request);
-        Validator.TryValidateObject(request, ctx, actual, true);
-
-        actual.Should().NotBeNullOrEmpty();
-        actual.Count().Should().Be(1);
-        actual.First().MemberNames.Should().BeEquivalentTo(new List<string>() { $"{nameof(request.Name)}" });
-        actual.First().ErrorMessage.Should().Contain("姓名未填寫");
-    }
+        Name = null,
+        Age = 20
+    };
+    
+    var actual = new List<ValidationResult>();
+    var ctx = new ValidationContext(request);
+    Validator.TryValidateObject(request, ctx, actual, true);
+    actual.Should().NotBeNullOrEmpty();
+    actual.Count().Should().Be(1);
+    actual.First().MemberNames.Should().BeEquivalentTo(new List<string>() {$"{nameof(request.Name)}" });
+    actual.First().ErrorMessage.Should().Contain("姓名未填寫");
+}
 ```
-
