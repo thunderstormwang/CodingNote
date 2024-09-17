@@ -1,4 +1,4 @@
-# [C# 3.0] IEnumerable v.s IQueryable
+# [C# 3.0]IEnumerable v.s IQueryable
 
 IEnumerable
 - queries in-memory data

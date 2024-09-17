@@ -1,6 +1,6 @@
-# .Net Core Configuration
+# [.Net Core]Configuration
 
-使用框架：.Net Core 8.0
+使用框架：.Net Core 8.0  
 
 ## 注入設定檔
 
@@ -60,9 +60,8 @@ public class ServiceClass
 
 ### 二、強型別設定，使用 IOptions
 
-在初始化時，將設定檔注入 IOptions
-
-在 program.cs 需要指定設定檔的位置和型別
+在初始化時，將設定檔注入 IOptions，以下為注入的方式  
+在 program.cs 指定設定檔的位置和注入的型別
 
 ```csharp
 var builder = WebApplication.CreateBuilder(args);
@@ -73,7 +72,8 @@ builder.Services.Configure<Member>(configuration.GetSection("Member"));
 var app = builder.Build();
 ```
 
-在 ServiceClass 中注入 IOptions
+在 ServiceClass 取得該設定檔物件  
+注意這裡的型別是 IOptions<Member>，而不是 Member  
 
 ```csharp
 public class ServiceClass
@@ -89,9 +89,8 @@ public class ServiceClass
 
 ### 三、強型別設定，直接使用類別
 
-在初始化時，將設定檔注入 IOptions
-
-在 program.cs 需要指定設定檔的位置和型別
+在初始化時，將設定檔轉換為你指定的類別，再注入，以下為注入的方式  
+在 program.cs 指定設定檔的位置和注入的型別
 
 ```csharp
 var builder = WebApplication.CreateBuilder(args);
@@ -102,7 +101,8 @@ builder.Services.AddSingleton<Member>(memberConfig);
 var app = builder.Build();
 ```
 
-在 ServiceClass 直接注入該類別
+在 ServiceClass 取得該設定檔物件  
+注意這裡的型別已是 Member  
 
 ```csharp
 public class ServiceClass
