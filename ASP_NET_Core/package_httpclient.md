@@ -1,4 +1,4 @@
-# [套件] HttpClient
+# [套件]HttpClient
 
 HttpClient 在 .net framework 4.5 以後推出，感覺是推出來取代 WebClient，事實上在 MSDN 的 WebClient 的介紹也不推薦你再繼續使用
 

@@ -1,4 +1,4 @@
-# [套件] Polly
+# [套件]Polly
 
 在官方文件作了這樣的介紹:
 <br>Polly is a .NET resilience and transient-fault-handling library that allows developers to express policies such as Retry, Circuit Breaker, Timeout, Bulkhead Isolation, Rate-limiting and Fallback in a fluent and thread-safe manner.
