@@ -231,7 +231,7 @@ var handler = Build();
 Console.WriteLine($"最後結果: {handler(5)}");
 ```
 
->>Before BarMiddleware, context: 5  
+>Before BarMiddleware, context: 5  
 Before BazMiddleware, context: 6  
 Before FooMiddleware, context: 7  
 After FooMiddleware, context: 7  
@@ -364,3 +364,34 @@ public class ApiLogMiddleware
 ```
 
 ## ExceptionHandleMiddle
+
+```csharp
+public class ExceptionHandleMiddleware
+{
+    private readonly RequestDelegate _next;
+    private ILogger<ExceptionHandleMiddleware> _logger;
+
+    public ExceptionHandleMiddleware(RequestDelegate next, ILogger<ExceptionHandleMiddleware> logger)
+    {
+        _next = next;
+        _logger = logger;
+    }
+
+    public async Task Invoke(HttpContext context)
+    {
+        try
+        {
+            // call the next delegate/middleware in the pipeline
+            await _next(context);
+        }
+        catch (Exception ex)
+        {
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            _logger.LogError($"Exception: {ex}");
+            await context.Response.WriteAsync(
+                $"{context.Response.StatusCode} Internal Server Error from the ExceptionHandle middleware.");
+        }
+    }
+}
+```
