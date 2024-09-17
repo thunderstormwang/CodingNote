@@ -1,4 +1,4 @@
-# [.Net Core]ExceptionFilter 應用
+# [.Net Core]Exception Filter 應用
 
 使用平台: .Net Core 8.0  
 

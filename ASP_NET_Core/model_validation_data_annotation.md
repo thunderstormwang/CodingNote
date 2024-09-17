@@ -4,6 +4,7 @@
   - [類別層級驗證](#類別層級驗證)
   - [Value Type 掛 Required，沒起到必填的效果](#value-type-掛-required沒起到必填的效果)
   - [Non Nullable Property 掛 \[Required\] 在 .Net Core 6.0 的預設行為，容易踩雷](#non-nullable-property-掛-required-在-net-core-60-的預設行為容易踩雷)
+  - [撰寫模型驗證的單元測試](#撰寫模型驗證的單元測試)
 
 
 使用平台: .Net Core 6.0
@@ -58,6 +59,8 @@ public class Person : IValidatableObject
 將 Name 填入後, 才會看到
 >At least one of Email, Phone is required.
 
+---
+
 ## Value Type 掛 Required，沒起到必填的效果
 
 宣告這樣的參數 model  
@@ -82,6 +85,8 @@ public class Person
 model binding 時如果 value type 的 property 對應不到，會給予它預設值，例如 int 會給 0，此時 `[Required]` 無法區分該 property 是沒給值還是傳入的值與預設值相同，所以必填就不起作用。
 
 改成 `int?` 即可讓必填就起作用。
+
+---
 
 ## Non Nullable Property 掛 [Required] 在 .Net Core 6.0 的預設行為，容易踩雷
 
@@ -136,6 +141,49 @@ builder.Services.AddControllers(options =>
 ```
 
 方法三，或是將該 property 從 `string` 改為 `string?`
+
+---
+
+## 撰寫模型驗證的單元測試
+
+使用平台: .Net Core 7.0
+
+使用套件:
+- FluentAssertions
+- NUnit
+
+一個這樣的參數 model 驗證
+
+```csharp
+public class Person
+{
+    [Required(ErrorMessage = "姓名未填寫")]
+    public string Name { get; set; }
+
+    public int Age { get; set; }
+}
+```
+
+單元測試可以這樣寫
+
+```csharp
+public void TestMethod()
+{
+    var request = new Person()
+    {
+        Name = null,
+        Age = 20
+    };
+    
+    var actual = new List<ValidationResult>();
+    var ctx = new ValidationContext(request);
+    Validator.TryValidateObject(request, ctx, actual, true);
+    actual.Should().NotBeNullOrEmpty();
+    actual.Count().Should().Be(1);
+    actual.First().MemberNames.Should().BeEquivalentTo(new List<string>() {$"{nameof(request.Name)}" });
+    actual.First().ErrorMessage.Should().Contain("姓名未填寫");
+}
+```
 
 ---
 

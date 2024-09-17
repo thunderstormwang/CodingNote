@@ -1,4 +1,4 @@
-# [.Net Core]ActionFilter 應用 - 自訂 Api 模型驗證回傳結構
+# [.Net Core]Action Filter 應用 - 自訂 Api 模型驗證回傳結構
 
 使用平台: .Net Core 8.0
 
