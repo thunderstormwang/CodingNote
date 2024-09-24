@@ -7,7 +7,30 @@
 使用套件:
 - System.Text.Json
 
-Create a JsonConverter for the interface.
+定義以下的類別：
+
+```csharp
+public interface IMyClass
+{
+    string Name { get; set; }
+}
+
+public class MyClass : IMyClass
+{
+    public string Name { get; set; }
+}
+```
+
+我們可以序列化 IParent 介面，因為它實際上是 Child 類別，但是無法反序列化為 IParent 介面，因為介面無法被實際化。  
+
+```csharp
+var myClass = new MyClass { Name = "Child" };
+var json = JsonSerializer.Serialize(parent);
+var parent2 = JsonSerializer.Deserialize<IMyClass>(json);
+```
+
+以下是解法：  
+Create a JsonConverter for the interface.  
 
 ```csharp
 public class InterfaceConverter<TImplementation, TInterface> : JsonConverter<TInterface>
@@ -46,6 +69,8 @@ public class InterfaceConverterFactory<TImplementation, TInterface> : JsonConver
     }
 }
 ```
+
+在使用時，需要將 InterfaceConverterFactory 加入到 JsonSerializerOptions 的 Converters 屬性中。  
 
 ```csharp
 var deserializerOptions = new JsonSerializerOptions
