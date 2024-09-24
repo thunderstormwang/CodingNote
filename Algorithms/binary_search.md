@@ -66,25 +66,28 @@ private static int BinarySearch(int[] array, int target)
 
 若目標不存在，，會有以下過程：  
 
+某次迴圈會讓 low 和 high 差 1，如下表所示，  
+
 | 僅次於目標的數 | 第一個大於目標的數 |
 |----------------|--------------------|
 | low            | high               |
 
-某次迴圈會讓 low 和 high 差 1，如上表所示，  
 
-再下次迴圈，計算 mid = low  
-array[mid] < target，所以 low = mid + 1  
+因為 log <= hign，會再進入下次迴圈，  
+計算中位數 mid = (low + high) / 2 = low = high  
+因為 array[mid] < target，所以調整 low = mid + 1  
 
 | 僅次於目標的數 | 第一個大於目標的數 |
 |----------------|--------------------|
 |                | low, high          |
 
-再下次迴圈，計算 mid = low = high  
-array[mid] > target，所以 high = mid - 1  
+因為 log <= hign，會再進入下次迴圈，  
+計算 mid = (low + high) / 2 = low = high  
+因為 array[mid] > target，所以 high = mid - 1  
 
 | 僅次於目標的數 | 第一個大於目標的數 |
 |----------------|--------------------|
 | high           | low                |
 
-再下次迴圈，不符合條件而跳出迴圈，  
+因為 log > hign，再下次迴圈，不符合條件而跳出迴圈，  
 此時 low 會指向第一個大於目標的數的位置，high 會指向 僅次於目標的數的位置

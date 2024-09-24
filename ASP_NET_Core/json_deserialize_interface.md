@@ -21,7 +21,7 @@ public class MyClass : IMyClass
 }
 ```
 
-我們可以序列化 IMyClass 介面，因為它實際上是 MyClass 類別，但是無法反序列化為 IMyClass 介面，因為介面無法被實際化。  
+我們可以序列化 `IMyClass` 介面，因為它實際上是 `MyClass` 類別，但是無法反序列化為 `IMyClass` 介面，因為介面無法被實際化。  
 
 ```csharp
 var myClass = new MyClass { Name = "Child" };
@@ -30,7 +30,7 @@ var parent2 = JsonSerializer.Deserialize<IMyClass>(json);
 ```
 >System.NotSupportedException: Deserialization of interface types is not supported. Type 'IMyClass'.
 
-我們需要告訴 Deserializer 在遇到介面時換成哪個類別，以下是解法：  
+我們需要告訴 `JsonSerializer.Deserializer` 在遇到介面時換成哪個類別，以下是解法：  
 Create a JsonConverter for the interface.  
 
 ```csharp
@@ -71,7 +71,7 @@ public class InterfaceConverterFactory<TImplementation, TInterface> : JsonConver
 }
 ```
 
-在使用時，需要將 InterfaceConverterFactory 加入到 JsonSerializerOptions 的 Converters 屬性中。  
+在使用時，需要將 `InterfaceConverterFactory` 加入到 `JsonSerializerOptions` 的 `Converters` 屬性中。  
 
 ```csharp
 var deserializerOptions = new JsonSerializerOptions
