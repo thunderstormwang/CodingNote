@@ -73,7 +73,7 @@ private static int BinarySearch(int[] array, int target)
 | low            | high               |
 
 
-因為 log <= hign，會再進入下次迴圈，  
+因為 log <= high，會再進入下次迴圈，  
 計算中位數 mid = (low + high) / 2 = low = high  
 因為 array[mid] < target，所以調整 low = mid + 1  
 
